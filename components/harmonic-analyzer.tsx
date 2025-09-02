@@ -16,7 +16,7 @@ import { validateChords, downloadBlob, blobToBase64, normalizeChordsForAPI } fro
 import { ProgressionAnalysisRequest, ProgressionAnalysisResponse } from '@/types'
 
 export function HarmonicAnalyzer() {
-  const [chords, setChords] = useState<string[]>(['C', 'Am', 'F', 'G'])
+  const [chords, setChords] = useState<string[]>(['Am', 'F', 'G', 'C'])
   const [tonalities, setTonalities] = useState<string[]>([])
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   

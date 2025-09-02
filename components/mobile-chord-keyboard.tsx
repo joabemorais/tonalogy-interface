@@ -1,8 +1,45 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { X, Plus, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+// Hook for long press detection - only handles long press, doesn't interfere with onClick
+function useLongPress(onLongPress: () => void, onClick: () => void, delay = 500) {
+  const timeoutRef = useRef<NodeJS.Timeout>()
+  const isLongPressRef = useRef(false)
+
+  const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
+    isLongPressRef.current = false
+    timeoutRef.current = setTimeout(() => {
+      isLongPressRef.current = true
+      onLongPress()
+    }, delay)
+  }
+
+  const handleEnd = (e: React.MouseEvent | React.TouchEvent) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    isLongPressRef.current = false
+  }
+
+  const handleCancel = (e: React.MouseEvent | React.TouchEvent) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    isLongPressRef.current = false
+  }
+
+  return {
+    onTouchStart: handleStart,
+    onTouchEnd: handleEnd,
+    onTouchCancel: handleCancel,
+    onMouseDown: handleStart,
+    onMouseUp: handleEnd,
+    onMouseLeave: handleCancel,
+  }
+}
 
 interface MobileChordKeyboardProps {
   chords: string[]
@@ -38,6 +75,7 @@ function buildChordSymbol(builder: ChordBuilder): string {
 export function MobileChordKeyboard({ chords, onChange, disabled = false, maxChords = 12 }: MobileChordKeyboardProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [showRemoveButtons, setShowRemoveButtons] = useState(false)
   const [builder, setBuilder] = useState<ChordBuilder>({
     note: 'C',
     accidental: '♮',
@@ -93,6 +131,31 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
   const handleRemoveChord = (index: number) => {
     const newChords = chords.filter((_, i) => i !== index)
     onChange(newChords)
+    // Hide remove buttons after removal
+    if (newChords.length <= 1) {
+      setShowRemoveButtons(false)
+    }
+  }
+
+  const handleLongPress = (index: number) => {
+    if (disabled || chords.length <= 1) return
+    
+    // Toggle remove buttons visibility
+    setShowRemoveButtons(!showRemoveButtons)
+    
+    // Vibrate if available (for better UX feedback)
+    if (navigator.vibrate) {
+      navigator.vibrate(50)
+    }
+  }
+
+  const handleChordPress = (index: number) => {
+    if (showRemoveButtons) {
+      // If in remove mode, don't open keyboard
+      setShowRemoveButtons(false)
+      return
+    }
+    handleOpenKeyboard(index)
   }
 
   const handleBuilderChange = (updates: Partial<ChordBuilder>) => {
@@ -126,38 +189,59 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
     <>
       {/* Chord Display Area */}
       <div className="space-y-3">
+        {/* Mode indicator */}
+        {showRemoveButtons && chords.length > 1 && (
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-destructive/10 text-destructive text-sm rounded-full">
+              <X className="h-4 w-4" />
+              <span>Tap to remove chords</span>
+            </div>
+          </div>
+        )}
+        
         {/* Current Chords */}
         <div className="flex flex-wrap gap-3 justify-center">
-          {chords.map((chord, index) => (
-            <button
-              key={index}
-              onClick={() => handleOpenKeyboard(index)}
-              disabled={disabled}
-              className={cn(
-                "h-14 w-20 text-base font-semibold border-2 rounded-xl bg-background",
-                "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
-                "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                "relative group flex items-center justify-center",
-                "shadow-sm hover:shadow-md"
-              )}
-            >
-              <span className="select-none">{chord}</span>
-              
-              {/* Remove button */}
-              {!disabled && chords.length > 1 && (
+          {chords.map((chord, index) => {
+            const longPressProps = useLongPress(
+              () => handleLongPress(index),
+              () => handleChordPress(index)
+            )
+            
+            return (
+              <div key={index} className="relative">
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleRemoveChord(index)
-                  }}
-                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center shadow-md z-10"
+                  {...longPressProps}
+                  onClick={() => handleChordPress(index)}
+                  disabled={disabled}
+                  className={cn(
+                    "h-14 w-20 text-base font-semibold border-2 rounded-xl bg-background",
+                    "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
+                    "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                    "flex items-center justify-center shadow-sm hover:shadow-md",
+                    "active:scale-95", // Visual feedback for press
+                    showRemoveButtons && chords.length > 1 && "border-destructive/50 bg-destructive/5"
+                  )}
                 >
-                  <X className="h-3 w-3" />
+                  <span className="select-none">{chord}</span>
                 </button>
-              )}
-            </button>
-          ))}
+                
+                {/* Remove button - always visible when in remove mode */}
+                {showRemoveButtons && chords.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleRemoveChord(index)
+                    }}
+                    disabled={disabled}
+                    className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center shadow-lg z-10 transition-all duration-200 animate-in zoom-in"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            )
+          })}
           
           {/* Add button */}
           {chords.length < maxChords && (
@@ -176,6 +260,27 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
             </button>
           )}
         </div>
+        
+        {/* Help text */}
+        {!showRemoveButtons && chords.length > 1 && (
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground">
+              Tap to edit • Long press to remove
+            </p>
+          </div>
+        )}
+        
+        {/* Exit remove mode button */}
+        {showRemoveButtons && (
+          <div className="text-center">
+            <button
+              onClick={() => setShowRemoveButtons(false)}
+              className="px-4 py-2 text-sm bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
+            >
+              Done
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Mobile Keyboard Overlay */}
