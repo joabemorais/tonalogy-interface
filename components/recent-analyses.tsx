@@ -19,7 +19,7 @@ export function RecentAnalyses() {
             <Clock className="h-5 w-5" />
             Recent Analyses
           </CardTitle>
-          <CardDescription>Your recent harmonic analyses will appear here</CardDescription>
+          <CardDescription>Your recent harmonic analyses</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center py-4">

@@ -5,18 +5,18 @@ import { useMutation } from '@tanstack/react-query'
 import { Music, Play, Download, RefreshCw } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ChordInput } from '@/components/chord-input'
+import { VisualChordInput } from '@/components/visual-chord-input'
 import { TonalitySelector } from '@/components/tonality-selector'
 import { ThemeSelector } from '@/components/theme-selector'
 import { AnalysisResults } from '@/components/analysis-results'
 import { VisualizationDisplay } from '@/components/visualization-display'
 import { useAnalysisStore, useHistoryStore, useSettingsStore } from '@/stores'
 import { apiClient } from '@/lib/api-client'
-import { validateChords, downloadBlob, blobToBase64 } from '@/lib/utils'
+import { validateChords, downloadBlob, blobToBase64, normalizeChordsForAPI } from '@/lib/utils'
 import { ProgressionAnalysisRequest, ProgressionAnalysisResponse } from '@/types'
 
 export function HarmonicAnalyzer() {
-  const [chords, setChords] = useState<string[]>(['C', 'Am', 'F', 'G'])
+  const [chords, setChords] = useState<string[]>(['Am', 'F', 'G', 'C'])
   const [tonalities, setTonalities] = useState<string[]>([])
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   
@@ -75,7 +75,7 @@ export function HarmonicAnalyzer() {
     }
 
     const request: ProgressionAnalysisRequest = {
-      chords: validation.validChords,
+      chords: normalizeChordsForAPI(validation.validChords),
       tonalities_to_test: tonalities,
       theme
     }
@@ -97,7 +97,7 @@ export function HarmonicAnalyzer() {
     }
 
     const request: ProgressionAnalysisRequest = {
-      chords: validation.validChords,
+      chords: normalizeChordsForAPI(validation.validChords),
       tonalities_to_test: tonalities,
       theme
     }
@@ -111,7 +111,8 @@ export function HarmonicAnalyzer() {
     try {
       const response = await fetch(visualization)
       const blob = await response.blob()
-      const filename = `tonalogy-${chords.join('_')}-${Date.now()}.png`
+      const normalizedChords = normalizeChordsForAPI(chords)
+      const filename = `tonalogy-${normalizedChords.join('_')}-${Date.now()}.png`
       downloadBlob(blob, filename)
     } catch (error) {
       setError('Failed to download visualization')
@@ -133,7 +134,7 @@ export function HarmonicAnalyzer() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Music className="h-5 w-5" />
-            Harmonic Progression Analysis
+            Harmonic Analysis
           </CardTitle>
           <CardDescription>
             Enter a chord progression to analyze its tonal characteristics using Kripke semantics
@@ -143,7 +144,7 @@ export function HarmonicAnalyzer() {
           {/* Chord Input */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Chord Progression</label>
-            <ChordInput 
+            <VisualChordInput 
               chords={chords}
               onChange={setChords}
               disabled={isLoading}
