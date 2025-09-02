@@ -33,3 +33,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# temporary files
+*.backup.*
+*.bak
+*.tmp
+*-minimal.*
+*-full.*
+page-simple.*
