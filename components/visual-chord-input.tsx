@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { MobileChordKeyboard } from '@/components/mobile-chord-keyboard'
 
 interface VisualChordInputProps {
   chords: string[]
@@ -94,15 +96,15 @@ function ChordSelector({ value, onChange, onRemove, canRemove, disabled, index }
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={cn(
-          "w-full h-12 px-3 py-2 text-sm font-medium border rounded-lg bg-background",
-          "hover:bg-accent hover:text-accent-foreground transition-colors",
+          "w-20 h-14 px-3 py-2 text-base font-semibold border-2 rounded-xl bg-background",
+          "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
           "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
           "disabled:opacity-50 disabled:cursor-not-allowed",
-          "group relative flex items-center justify-center",
-          isOpen && "ring-2 ring-ring border-transparent"
+          "group relative flex items-center justify-center shadow-sm hover:shadow-md",
+          isOpen && "ring-2 ring-ring border-transparent shadow-md"
         )}
       >
-        {value || `Chord ${index + 1}`}
+        <span className="select-none">{value || `Chord ${index + 1}`}</span>
         
         {/* Remove button */}
         {canRemove && (
@@ -112,7 +114,7 @@ function ChordSelector({ value, onChange, onRemove, canRemove, disabled, index }
               onRemove()
             }}
             disabled={disabled}
-            className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0 flex items-center justify-center z-10"
+            className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 opacity-0 group-hover:opacity-100 transition-all duration-200 disabled:opacity-0 flex items-center justify-center z-10 shadow-md"
           >
             <X className="h-3 w-3" />
           </button>
@@ -210,6 +212,21 @@ function ChordSelector({ value, onChange, onRemove, canRemove, disabled, index }
 }
 
 export function VisualChordInput({ chords, onChange, disabled = false, maxChords = 12 }: VisualChordInputProps) {
+  const isMobile = useIsMobile()
+
+  // Use mobile keyboard on mobile devices
+  if (isMobile) {
+    return (
+      <MobileChordKeyboard 
+        chords={chords}
+        onChange={onChange}
+        disabled={disabled}
+        maxChords={maxChords}
+      />
+    )
+  }
+
+  // Desktop/tablet layout
   const handleChordChange = (index: number, value: string) => {
     const newChords = [...chords]
     newChords[index] = value
@@ -230,8 +247,8 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
   }
 
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 justify-items-center">
         {chords.map((chord, index) => (
           <ChordSelector
             key={index}
