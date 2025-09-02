@@ -103,3 +103,11 @@ function RecentAnalysesContent() {
     </Card>
   )
 }
+
+export function RecentAnalyses() {
+  return (
+    <ClientOnly>
+      <RecentAnalysesContent />
+    </ClientOnly>
+  )
+}
