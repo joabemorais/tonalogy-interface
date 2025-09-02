@@ -95,7 +95,7 @@ export function VisualizationDisplay({ imageData, theme }: VisualizationDisplayP
       </CardHeader>
       
       <CardContent>
-        <div className="relative bg-secondary/10 rounded-lg p-4">
+        <div className="relative bg-secondary/10 rounded-lg p-4 custom-scrollbar">
           <div className="flex justify-center">
             <img
               src={imageData}

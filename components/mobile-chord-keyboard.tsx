@@ -328,7 +328,7 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
           />
           
           {/* Keyboard Panel */}
-          <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-lg z-50 animate-in slide-in-from-bottom duration-300 max-h-[70vh] overflow-y-auto">
+          <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-lg z-50 animate-in slide-in-from-bottom duration-300 max-h-[70vh] overflow-y-auto custom-scrollbar-autohide">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-background sticky top-0">
               <button
