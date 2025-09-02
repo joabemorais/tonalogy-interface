@@ -75,6 +75,23 @@ function generateChordSuggestions(input: string): string[] {
 }
 
 /**
+ * Normalize chord symbols for API requests
+ * Converts visual symbols (♯, ♭) to ASCII equivalents (#, b)
+ */
+export function normalizeChordForAPI(chord: string): string {
+  return chord
+    .replace(/♯/g, '#')
+    .replace(/♭/g, 'b')
+}
+
+/**
+ * Normalize array of chords for API requests
+ */
+export function normalizeChordsForAPI(chords: string[]): string[] {
+  return chords.map(normalizeChordForAPI)
+}
+
+/**
  * Validate multiple chords
  */
 export function validateChords(chords: string[]): { 

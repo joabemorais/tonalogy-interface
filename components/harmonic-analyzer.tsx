@@ -12,7 +12,7 @@ import { AnalysisResults } from '@/components/analysis-results'
 import { VisualizationDisplay } from '@/components/visualization-display'
 import { useAnalysisStore, useHistoryStore, useSettingsStore } from '@/stores'
 import { apiClient } from '@/lib/api-client'
-import { validateChords, downloadBlob, blobToBase64 } from '@/lib/utils'
+import { validateChords, downloadBlob, blobToBase64, normalizeChordsForAPI } from '@/lib/utils'
 import { ProgressionAnalysisRequest, ProgressionAnalysisResponse } from '@/types'
 
 export function HarmonicAnalyzer() {
@@ -75,7 +75,7 @@ export function HarmonicAnalyzer() {
     }
 
     const request: ProgressionAnalysisRequest = {
-      chords: validation.validChords,
+      chords: normalizeChordsForAPI(validation.validChords),
       tonalities_to_test: tonalities,
       theme
     }
@@ -97,7 +97,7 @@ export function HarmonicAnalyzer() {
     }
 
     const request: ProgressionAnalysisRequest = {
-      chords: validation.validChords,
+      chords: normalizeChordsForAPI(validation.validChords),
       tonalities_to_test: tonalities,
       theme
     }
@@ -111,7 +111,8 @@ export function HarmonicAnalyzer() {
     try {
       const response = await fetch(visualization)
       const blob = await response.blob()
-      const filename = `tonalogy-${chords.join('_')}-${Date.now()}.png`
+      const normalizedChords = normalizeChordsForAPI(chords)
+      const filename = `tonalogy-${normalizedChords.join('_')}-${Date.now()}.png`
       downloadBlob(blob, filename)
     } catch (error) {
       setError('Failed to download visualization')
