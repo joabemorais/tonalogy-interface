@@ -121,90 +121,79 @@ function ChordSelector({ value, onChange, onRemove, canRemove, disabled, index }
 
       {/* Chord builder panel */}
       {isOpen && !disabled && (
-        <div className="absolute top-full left-0 mt-2 p-4 bg-popover border rounded-lg shadow-lg z-20 min-w-[280px]">
-          {/* Note selector */}
-          <div className="space-y-2 mb-4">
-            <label className="text-xs font-medium text-muted-foreground">Note</label>
-            <div className="grid grid-cols-7 gap-1">
-              {NOTES.map((note) => (
-                <button
-                  key={note}
-                  onClick={() => handleBuilderChange({ note })}
-                  className={cn(
-                    "h-8 text-sm font-medium rounded border transition-colors",
-                    builder.note === note
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background hover:bg-accent hover:text-accent-foreground border-border"
-                  )}
-                >
-                  {note}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Accidental selector */}
-          <div className="space-y-2 mb-4">
-            <label className="text-xs font-medium text-muted-foreground">Accidental</label>
-            <div className="grid grid-cols-3 gap-1">
-              {ACCIDENTALS.map((acc) => (
-                <button
-                  key={acc}
-                  onClick={() => handleBuilderChange({ accidental: acc })}
-                  className={cn(
-                    "h-8 text-sm font-medium rounded border transition-colors",
-                    builder.accidental === acc
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background hover:bg-accent hover:text-accent-foreground border-border"
-                  )}
-                >
-                  {acc === '♮' ? 'Natural' : acc}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Chord type selector */}
-          <div className="space-y-2 mb-4">
-            <label className="text-xs font-medium text-muted-foreground">Type</label>
-            <div className="space-y-1">
-              {CHORD_TYPES.map((type) => (
-                <button
-                  key={type.symbol}
-                  onClick={() => handleBuilderChange({ type })}
-                  className={cn(
-                    "w-full h-9 px-3 text-sm font-medium rounded border transition-colors text-left",
-                    builder.type.symbol === type.symbol
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background hover:bg-accent hover:text-accent-foreground border-border"
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{type.label}</span>
-                    <span className="text-xs opacity-70">{type.description}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Preview */}
-          <div className="pt-2 border-t">
-            <div className="text-xs text-muted-foreground mb-1">Preview:</div>
-            <div className="text-lg font-bold text-center py-2 bg-accent rounded">
+        <div className="absolute top-full left-0 mt-1 p-4 bg-popover border rounded-lg shadow-lg z-20 min-w-[320px] max-w-[420px]">
+          {/* Header with preview */}
+          <div className="flex items-center justify-between mb-3 pb-2 border-b">
+            <span className="text-xs font-medium text-muted-foreground">Build Chord</span>
+            <div className="text-lg font-bold px-3 py-1 bg-accent rounded">
               {buildChordSymbol(builder)}
             </div>
           </div>
 
-          {/* Close button */}
-          <div className="pt-3 flex justify-end">
-            <Button
-              size="sm"
-              onClick={() => setIsOpen(false)}
-              variant="outline"
-            >
-              Done
-            </Button>
+          {/* Compact horizontal layout */}
+          <div className="grid grid-cols-3 gap-3">
+            {/* Note selector */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-muted-foreground">Note</label>
+              <div className="grid grid-cols-2 gap-1">
+                {NOTES.map((note) => (
+                  <button
+                    key={note}
+                    onClick={() => handleBuilderChange({ note })}
+                    className={cn(
+                      "h-8 text-sm font-medium rounded border transition-colors",
+                      builder.note === note
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background hover:bg-accent hover:text-accent-foreground border-border"
+                    )}
+                  >
+                    {note}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Accidental selector */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-muted-foreground">Accidental</label>
+              <div className="space-y-1">
+                {ACCIDENTALS.map((acc) => (
+                  <button
+                    key={acc}
+                    onClick={() => handleBuilderChange({ accidental: acc })}
+                    className={cn(
+                      "w-full h-8 text-sm font-medium rounded border transition-colors",
+                      builder.accidental === acc
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background hover:bg-accent hover:text-accent-foreground border-border"
+                    )}
+                  >
+                    {acc === '♮' ? '♮' : acc}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Chord type selector */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-muted-foreground">Type</label>
+              <div className="space-y-1">
+                {CHORD_TYPES.map((type) => (
+                  <button
+                    key={type.symbol}
+                    onClick={() => handleBuilderChange({ type })}
+                    className={cn(
+                      "w-full h-8 px-2 text-sm font-medium rounded border transition-colors text-left",
+                      builder.type.symbol === type.symbol
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background hover:bg-accent hover:text-accent-foreground border-border"
+                    )}
+                  >
+                    {type.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -241,8 +230,8 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+    <div className="space-y-3">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
         {chords.map((chord, index) => (
           <ChordSelector
             key={index}
@@ -256,9 +245,9 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
         ))}
       </div>
 
-      {/* Add chord button */}
-      {chords.length < maxChords && (
-        <div className="flex justify-center">
+      {/* Add chord button and count in same row */}
+      <div className="flex items-center justify-between">
+        {chords.length < maxChords && (
           <Button
             onClick={addChord}
             disabled={disabled}
@@ -269,12 +258,11 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
             <Plus className="h-4 w-4" />
             Add Chord
           </Button>
+        )}
+        
+        <div className="text-xs text-muted-foreground">
+          {chords.length} / {maxChords} chords
         </div>
-      )}
-
-      {/* Chord count */}
-      <div className="text-xs text-muted-foreground text-center">
-        {chords.length} / {maxChords} chords
       </div>
     </div>
   )
