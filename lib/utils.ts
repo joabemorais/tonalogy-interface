@@ -7,32 +7,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Common chord patterns and validation
+ * Common chord patterns and validation (Triads only)
  */
 const CHORD_PATTERNS = {
-  // Major chords
+  // Major chords (no modifier or M)
   major: /^[A-G][#♯b♭]?M?$/,
   // Minor chords  
   minor: /^[A-G][#♯b♭]?m$/,
-  // Dominant 7th
-  dominant7: /^[A-G][#♯b♭]?7$/,
-  // Major 7th
-  major7: /^[A-G][#♯b♭]?M7$/,
-  // Minor 7th
-  minor7: /^[A-G][#♯b♭]?m7$/,
-  // Diminished
-  diminished: /^[A-G][#♯b♭]?(dim|°)$/,
-  // Half-diminished
-  halfDiminished: /^[A-G][#♯b♭]?(m7♭5|ø)$/,
-  // Augmented
-  augmented: /^[A-G][#♯b♭]?(aug|\+)$/,
-  // Sus chords
-  sus2: /^[A-G][#♯b♭]?sus2$/,
-  sus4: /^[A-G][#♯b♭]?sus4$/,
-  // Extended chords
-  ninth: /^[A-G][#♯b♭]?9$/,
-  eleventh: /^[A-G][#♯b♭]?11$/,
-  thirteenth: /^[A-G][#♯b♭]?13$/
+  // Diminished chords
+  diminished: /^[A-G][#♯b♭]?(dim|°)$/
 }
 
 /**
@@ -78,19 +61,17 @@ function generateChordSuggestions(input: string): string[] {
     return ['C', 'D', 'E', 'F', 'G', 'A', 'B']
   }
 
-  // Common chord types for the note
+  // Common triad types for the note
   const accidental = input.length > 1 && /[#♯b♭]/.test(input.charAt(1)) ? input.charAt(1) : ''
   const base = baseNote + accidental
 
   suggestions.push(
-    base,           // Major
-    base + 'm',     // Minor
-    base + '7',     // Dominant 7th
-    base + 'M7',    // Major 7th
-    base + 'm7'     // Minor 7th
+    base,             // Major
+    base + 'm',       // Minor  
+    base + 'dim'      // Diminished
   )
 
-  return suggestions.slice(0, 5)
+  return suggestions.slice(0, 3)
 }
 
 /**
