@@ -11,16 +11,18 @@ interface ThemeSelectorProps {
 
 export function ThemeSelector({ selected, onChange, disabled = false }: ThemeSelectorProps) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-3">
       <button
         onClick={() => onChange('light')}
         disabled={disabled}
         className={cn(
-          "px-3 py-2 text-sm rounded-md transition-colors",
+          "px-4 py-2 text-sm font-medium rounded-lg border-2 transition-all duration-200",
           "disabled:opacity-50 disabled:cursor-not-allowed",
+          "shadow-sm hover:shadow-md hover:scale-105 active:scale-95",
+          "flex items-center justify-center min-w-[80px]",
           selected === 'light'
-            ? "bg-primary text-primary-foreground"
-            : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
+            ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
+            : "bg-background border-border hover:bg-accent hover:text-accent-foreground hover:border-primary/50"
         )}
       >
         Light
@@ -29,11 +31,13 @@ export function ThemeSelector({ selected, onChange, disabled = false }: ThemeSel
         onClick={() => onChange('dark')}
         disabled={disabled}
         className={cn(
-          "px-3 py-2 text-sm rounded-md transition-colors",
+          "px-4 py-2 text-sm font-medium rounded-lg border-2 transition-all duration-200",
           "disabled:opacity-50 disabled:cursor-not-allowed",
+          "shadow-sm hover:shadow-md hover:scale-105 active:scale-95",
+          "flex items-center justify-center min-w-[80px]",
           selected === 'dark'
-            ? "bg-primary text-primary-foreground"
-            : "bg-secondary hover:bg-secondary/80 text-secondary-foreground"
+            ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
+            : "bg-background border-border hover:bg-accent hover:text-accent-foreground hover:border-primary/50"
         )}
       >
         Dark
