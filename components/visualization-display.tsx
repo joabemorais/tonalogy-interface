@@ -60,7 +60,7 @@ export function VisualizationDisplay({ imageData, theme }: VisualizationDisplayP
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="space-y-4">
           <div>
             <CardTitle className="flex items-center gap-2">
               <Eye className="h-5 w-5" />
@@ -71,12 +71,12 @@ export function VisualizationDisplay({ imageData, theme }: VisualizationDisplayP
             </CardDescription>
           </div>
           
-          <div className="flex gap-2">
+          {/* Responsive button layout */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
             <Button
               onClick={handleOpenInNewTab}
               variant="outline"
-              size="sm"
-              className="gap-2"
+              className="gap-2 flex-1 sm:flex-none"
             >
               <Maximize2 className="h-4 w-4" />
               Full View
@@ -84,9 +84,8 @@ export function VisualizationDisplay({ imageData, theme }: VisualizationDisplayP
             
             <Button
               onClick={handleDownload}
-              variant="outline"
-              size="sm"
-              className="gap-2"
+              variant="outline" 
+              className="gap-2 flex-1 sm:flex-none"
             >
               <Download className="h-4 w-4" />
               Download
