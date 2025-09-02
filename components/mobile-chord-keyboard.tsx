@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { X, Plus, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -67,9 +67,92 @@ interface ChordBuilder {
   type: ChordType
 }
 
+interface ChordButtonProps {
+  chord: string
+  index: number
+  disabled: boolean
+  showRemoveButtons: boolean
+  onChordPress: (index: number) => void
+  onLongPress: (index: number) => void
+  onRemove: (index: number) => void
+}
+
+function ChordButton({ 
+  chord, 
+  index, 
+  disabled, 
+  showRemoveButtons, 
+  onChordPress, 
+  onLongPress, 
+  onRemove 
+}: ChordButtonProps) {
+  const longPressProps = useLongPress(
+    () => onLongPress(index),
+    () => onChordPress(index)
+  )
+  
+  return (
+    <div key={index} className="relative">
+      <button
+        {...longPressProps}
+        onClick={() => onChordPress(index)}
+        disabled={disabled}
+        className={cn(
+          "h-14 w-20 text-base font-semibold border-2 rounded-xl bg-background",
+          "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
+          "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
+          "disabled:opacity-50 disabled:cursor-not-allowed",
+          "flex items-center justify-center shadow-sm hover:shadow-md",
+          "active:scale-95", // Visual feedback for press
+          showRemoveButtons && "border-destructive/50 bg-destructive/5"
+        )}
+      >
+        <span className="select-none">{chord}</span>
+      </button>
+      
+      {/* Remove button - always visible when in remove mode */}
+      {showRemoveButtons && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onRemove(index)
+          }}
+          disabled={disabled}
+          className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center shadow-lg z-10 transition-all duration-200 animate-in zoom-in"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+    </div>
+  )
+}
+
 function buildChordSymbol(builder: ChordBuilder): string {
   const accidentalSymbol = builder.accidental === '♮' ? '' : builder.accidental
   return `${builder.note}${accidentalSymbol}${builder.type.symbol}`
+}
+
+function parseChordSymbol(chord: string): ChordBuilder | null {
+  if (!chord) return null
+  
+  const note = chord.charAt(0).toUpperCase() as Note
+  if (!NOTES.includes(note)) return null
+  
+  let accidental: Accidental = '♮'
+  let typeStr = chord.slice(1)
+  
+  if (typeStr.startsWith('♯') || typeStr.startsWith('#')) {
+    accidental = '♯'
+    typeStr = typeStr.slice(1)
+  } else if (typeStr.startsWith('♭') || typeStr.startsWith('b')) {
+    accidental = '♭'
+    typeStr = typeStr.slice(1)
+  }
+  
+  const type = CHORD_TYPES.find(t => t.symbol === typeStr)
+  if (!type) return null
+  
+  return { note, accidental, type }
 }
 
 export function MobileChordKeyboard({ chords, onChange, disabled = false, maxChords = 12 }: MobileChordKeyboardProps) {
@@ -82,7 +165,14 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
     type: CHORD_TYPES[0]
   })
 
-  const handleOpenKeyboard = (index?: number) => {
+  // Hide remove buttons when only one chord remains
+  useEffect(() => {
+    if (chords.length <= 1 && showRemoveButtons) {
+      setShowRemoveButtons(false)
+    }
+  }, [chords.length, showRemoveButtons])
+
+  const handleOpenKeyboard = useCallback((index?: number) => {
     if (disabled) return
     
     if (index !== undefined) {
@@ -103,7 +193,7 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
       })
     }
     setIsOpen(true)
-  }
+  }, [disabled, chords])
 
   const handleCloseKeyboard = () => {
     setIsOpen(false)
@@ -128,16 +218,13 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
     handleCloseKeyboard()
   }
 
-  const handleRemoveChord = (index: number) => {
+  const handleRemoveChord = useCallback((index: number) => {
     const newChords = chords.filter((_, i) => i !== index)
     onChange(newChords)
-    // Hide remove buttons after removal
-    if (newChords.length <= 1) {
-      setShowRemoveButtons(false)
-    }
-  }
+    // The useEffect will handle hiding remove buttons if needed
+  }, [chords, onChange])
 
-  const handleLongPress = (index: number) => {
+  const handleLongPress = useCallback((index: number) => {
     if (disabled || chords.length <= 1) return
     
     // Toggle remove buttons visibility
@@ -147,43 +234,20 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
     if (navigator.vibrate) {
       navigator.vibrate(50)
     }
-  }
+  }, [disabled, chords.length, showRemoveButtons])
 
-  const handleChordPress = (index: number) => {
+  const handleChordPress = useCallback((index: number) => {
     if (showRemoveButtons) {
       // If in remove mode, don't open keyboard
       setShowRemoveButtons(false)
       return
     }
     handleOpenKeyboard(index)
-  }
+  }, [showRemoveButtons, handleOpenKeyboard])
 
-  const handleBuilderChange = (updates: Partial<ChordBuilder>) => {
+  const handleBuilderChange = useCallback((updates: Partial<ChordBuilder>) => {
     setBuilder(prev => ({ ...prev, ...updates }))
-  }
-
-  function parseChordSymbol(chord: string): ChordBuilder | null {
-    if (!chord) return null
-    
-    const note = chord.charAt(0).toUpperCase() as Note
-    if (!NOTES.includes(note)) return null
-    
-    let accidental: Accidental = '♮'
-    let typeStr = chord.slice(1)
-    
-    if (typeStr.startsWith('♯') || typeStr.startsWith('#')) {
-      accidental = '♯'
-      typeStr = typeStr.slice(1)
-    } else if (typeStr.startsWith('♭') || typeStr.startsWith('b')) {
-      accidental = '♭'
-      typeStr = typeStr.slice(1)
-    }
-    
-    const type = CHORD_TYPES.find(t => t.symbol === typeStr)
-    if (!type) return null
-    
-    return { note, accidental, type }
-  }
+  }, [])
 
   return (
     <>
@@ -201,47 +265,18 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
         
         {/* Current Chords */}
         <div className="flex flex-wrap gap-3 justify-center">
-          {chords.map((chord, index) => {
-            const longPressProps = useLongPress(
-              () => handleLongPress(index),
-              () => handleChordPress(index)
-            )
-            
-            return (
-              <div key={index} className="relative">
-                <button
-                  {...longPressProps}
-                  onClick={() => handleChordPress(index)}
-                  disabled={disabled}
-                  className={cn(
-                    "h-14 w-20 text-base font-semibold border-2 rounded-xl bg-background",
-                    "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
-                    "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
-                    "disabled:opacity-50 disabled:cursor-not-allowed",
-                    "flex items-center justify-center shadow-sm hover:shadow-md",
-                    "active:scale-95", // Visual feedback for press
-                    showRemoveButtons && chords.length > 1 && "border-destructive/50 bg-destructive/5"
-                  )}
-                >
-                  <span className="select-none">{chord}</span>
-                </button>
-                
-                {/* Remove button - always visible when in remove mode */}
-                {showRemoveButtons && chords.length > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleRemoveChord(index)
-                    }}
-                    disabled={disabled}
-                    className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center shadow-lg z-10 transition-all duration-200 animate-in zoom-in"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-            )
-          })}
+          {chords.map((chord, index) => (
+            <ChordButton
+              key={index}
+              chord={chord}
+              index={index}
+              disabled={disabled}
+              showRemoveButtons={showRemoveButtons}
+              onChordPress={handleChordPress}
+              onLongPress={handleLongPress}
+              onRemove={handleRemoveChord}
+            />
+          ))}
           
           {/* Add button */}
           {chords.length < maxChords && (
