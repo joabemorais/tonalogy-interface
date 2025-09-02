@@ -4,48 +4,86 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    /* Light theme - clean and modern */
+    --background: 0 0% 100%;        /* Pure white */
+    --foreground: 0 0% 9%;          /* Almost black text */
+    
+    /* Cards with subtle shadows */
+    --card: 0 0% 100%;              /* White cards */
+    --card-foreground: 0 0% 9%;
+    
+    /* Popovers with slight gray */
+    --popover: 0 0% 100%;           /* White popups */
+    --popover-foreground: 0 0% 9%;
+    
+    /* Modern blue primary - same as dark */
+    --primary: 213 93% 68%;         /* Bright modern blue #5b9df9 */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    
+    /* Light gray backgrounds */
+    --secondary: 0 0% 96%;          /* Very light gray #f5f5f5 */
+    --secondary-foreground: 0 0% 9%;
+    
+    /* Muted surfaces */
+    --muted: 0 0% 96%;              /* Light gray #f5f5f5 */
+    --muted-foreground: 0 0% 45%;   /* Medium gray text */
+    
+    /* Accent surfaces */
+    --accent: 0 0% 96%;             /* Light gray #f5f5f5 */
+    --accent-foreground: 0 0% 9%;
+    
+    /* Modern destructive red */
+    --destructive: 0 75% 55%;       /* Red #e53e3e */
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Subtle borders */
+    --border: 0 0% 90%;             /* Light gray border #e6e6e6 */
+    --input: 0 0% 90%;              /* Same as border */
+    
+    /* Focus ring */
+    --ring: 213 93% 68%;            /* Same as primary */
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    /* Deep blacks and grays - inspired by Linear/Raycast */
+    --background: 0 0% 7%;         /* Very dark gray-black #121212 */
+    --foreground: 0 0% 95%;        /* Near white text */
+    
+    /* Cards with subtle elevation */
+    --card: 0 0% 9%;               /* Slightly lighter than background #171717 */
+    --card-foreground: 0 0% 95%;
+    
+    /* Popovers with more contrast */
+    --popover: 0 0% 11%;           /* Even lighter for popups #1c1c1c */
+    --popover-foreground: 0 0% 95%;
+    
+    /* Modern blue primary - inspired by Linear */
+    --primary: 213 93% 68%;        /* Bright modern blue #5b9df9 */
+    --primary-foreground: 0 0% 5%; /* Dark text on primary */
+    
+    /* Subtle secondary surfaces */
+    --secondary: 0 0% 13%;         /* #212121 */
+    --secondary-foreground: 0 0% 85%;
+    
+    /* Muted backgrounds and text */
+    --muted: 0 0% 15%;             /* #262626 */
+    --muted-foreground: 0 0% 65%;  /* Medium gray text */
+    
+    /* Accent surfaces */
+    --accent: 0 0% 13%;            /* #212121 */
+    --accent-foreground: 0 0% 95%;
+    
+    /* Modern destructive red */
+    --destructive: 0 75% 60%;      /* Vibrant red #f56565 */
+    --destructive-foreground: 0 0% 95%;
+    
+    /* Subtle borders */
+    --border: 0 0% 18%;            /* #2e2e2e */
+    --input: 0 0% 18%;             /* Same as border */
+    
+    /* Focus ring */
+    --ring: 213 93% 68%;           /* Same as primary */
   }
 }
 
@@ -57,18 +95,184 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+  
+  /* Global scrollbar styling for the entire site */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
+  }
+  
+  html::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  html::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  html::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+  
+  html::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
+  
+  html::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  
+  /* Enhanced dark mode for global scrollbar */
+  .dark html {
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  
+  .dark html::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+  }
+  
+  .dark html::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.3);
+  }
 }
 
 @layer components {
   .music-card {
-    @apply bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow;
+    @apply bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-200;
   }
   
   .chord-input {
-    @apply bg-background border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
+    @apply bg-background border border-input rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200;
   }
   
   .analysis-step {
-    @apply border-l-4 border-primary/20 pl-4 py-2 bg-secondary/5 rounded-r-md;
+    @apply border-l-4 border-primary/30 pl-4 py-3 bg-secondary/20 rounded-r-lg backdrop-blur-sm;
+  }
+  
+  /* Enhanced mobile keyboard styles */
+  .mobile-keyboard-backdrop {
+    @apply fixed inset-0 bg-black/40 backdrop-blur-sm;
+  }
+  
+  .mobile-keyboard-panel {
+    @apply bg-card border-t border-border shadow-2xl;
+  }
+  
+  /* Improved button styles */
+  .chord-button {
+    @apply bg-background border-2 border-border rounded-xl transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 active:scale-95;
+  }
+  
+  .chord-button-selected {
+    @apply bg-primary text-primary-foreground border-primary shadow-lg scale-105;
+  }
+  
+  .chord-button-hover {
+    @apply hover:bg-accent hover:text-accent-foreground hover:border-primary/50;
+  }
+  
+  /* Modern scrollbar styles - inspired by Linear/Raycast */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 3px;
+    transition: all 0.2s ease;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  
+  /* Enhanced dark mode scrollbars */
+  .dark .custom-scrollbar {
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border: 1px solid hsl(var(--background));
+  }
+  
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border: 1px solid hsl(var(--background));
+  }
+  
+  /* Ultra-thin scrollbars for mobile */
+  @media (max-width: 768px) {
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+  }
+  
+  /* Auto-hiding scrollbars (show only on hover) */
+  .custom-scrollbar-autohide {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.2s ease;
+  }
+  
+  .custom-scrollbar-autohide:hover {
+    scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
+  }
+  
+  .custom-scrollbar-autohide::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .custom-scrollbar-autohide::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar-autohide::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+  
+  .custom-scrollbar-autohide:hover::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
+  }
+  
+  .custom-scrollbar-autohide::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
+  
+  .dark .custom-scrollbar-autohide:hover {
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  
+  .dark .custom-scrollbar-autohide:hover::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+  }
+  
+  .dark .custom-scrollbar-autohide::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.3);
+  }
+  
+  .custom-scrollbar-autohide::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }

@@ -70,7 +70,7 @@ export function AnalysisResults({ result, error }: AnalysisResultsProps) {
         {result.explanation_details.length > 0 && (
           <div className="space-y-2">
             <div className="text-sm font-medium">Analysis Steps</div>
-            <div className="space-y-2 max-h-64 overflow-y-auto">
+            <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar-autohide">
               {result.explanation_details.map((step, index) => (
                 <div key={index} className="analysis-step">
                   <div className="flex justify-between items-start gap-2">

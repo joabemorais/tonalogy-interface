@@ -1,15 +1,33 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Clock, Star } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useHistoryStore } from '@/stores'
 import { formatTimestamp } from '@/lib/utils'
+import { ClientOnly } from '@/components/client-only'
+import type { AnalysisHistory } from '@/types'
 
-export function RecentAnalyses() {
+function RecentAnalysesContent() {
   const { getRecentAnalyses, toggleFavorite } = useHistoryStore()
-  const recentAnalyses = getRecentAnalyses(5)
+  const [recentAnalyses, setRecentAnalyses] = useState<AnalysisHistory[]>([])
+
+  useEffect(() => {
+    // Initial load
+    const updateAnalyses = () => {
+      setRecentAnalyses(getRecentAnalyses(5))
+    }
+    
+    updateAnalyses()
+    
+    // Listen for store changes (if needed)
+    const unsubscribe = useHistoryStore.subscribe?.(updateAnalyses)
+    
+    return () => {
+      if (unsubscribe) unsubscribe()
+    }
+  }, [getRecentAnalyses])
 
   if (recentAnalyses.length === 0) {
     return (
@@ -83,5 +101,13 @@ export function RecentAnalyses() {
         ))}
       </CardContent>
     </Card>
+  )
+}
+
+export function RecentAnalyses() {
+  return (
+    <ClientOnly>
+      <RecentAnalysesContent />
+    </ClientOnly>
   )
 }
