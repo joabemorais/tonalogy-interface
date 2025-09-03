@@ -84,6 +84,7 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
       document.addEventListener('keydown', handleKeyDown)
       return () => document.removeEventListener('keydown', handleKeyDown)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])
 
   // Use mobile keyboard on mobile devices
