@@ -1,10 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Download, Eye, Maximize2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { DiagramThemeSelector } from '@/components/diagram-theme-selector'
+import { useTheme } from 'next-themes'
+import { useAnalysisStore } from '@/stores'
 
 interface MultiThemeVisualizationDisplayProps {
   visualizations: {
@@ -14,25 +16,59 @@ interface MultiThemeVisualizationDisplayProps {
 }
 
 export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVisualizationDisplayProps) {
-  const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark'>(() => {
-    // Default to light if available, otherwise dark
-    return visualizations.light ? 'light' : 'dark'
-  })
+  const { theme: systemTheme } = useTheme()
+  const { 
+    diagramTheme, 
+    followSystemTheme, 
+    setDiagramTheme, 
+    setFollowSystemTheme 
+  } = useAnalysisStore()
   
-  const currentVisualization = visualizations[selectedTheme]
   const lightAvailable = !!visualizations.light
   const darkAvailable = !!visualizations.dark
   
-  // Auto-switch if current theme becomes unavailable
-  React.useEffect(() => {
+  // Determine the effective theme to display
+  const effectiveTheme = followSystemTheme 
+    ? (systemTheme === 'dark' ? 'dark' : 'light')
+    : diagramTheme
+  
+  const currentVisualization = visualizations[effectiveTheme]
+  
+  // Auto-switch to available theme if current is not available
+  useEffect(() => {
     if (!currentVisualization) {
-      if (lightAvailable && selectedTheme !== 'light') {
-        setSelectedTheme('light')
-      } else if (darkAvailable && selectedTheme !== 'dark') {
-        setSelectedTheme('dark')
+      if (lightAvailable && effectiveTheme !== 'light') {
+        if (!followSystemTheme) setDiagramTheme('light')
+      } else if (darkAvailable && effectiveTheme !== 'dark') {
+        if (!followSystemTheme) setDiagramTheme('dark')
       }
     }
-  }, [currentVisualization, lightAvailable, darkAvailable, selectedTheme])
+  }, [currentVisualization, lightAvailable, darkAvailable, effectiveTheme, followSystemTheme, setDiagramTheme])
+
+  // When system theme changes and we're following it, update the display
+  useEffect(() => {
+    if (followSystemTheme && systemTheme) {
+      const newTheme = systemTheme === 'dark' ? 'dark' : 'light'
+      // Only update if the visualization is available
+      if ((newTheme === 'light' && lightAvailable) || (newTheme === 'dark' && darkAvailable)) {
+        // No need to set anything, effectiveTheme will handle it
+      }
+    }
+  }, [systemTheme, followSystemTheme, lightAvailable, darkAvailable])
+
+  const handleThemeChange = (theme: 'light' | 'dark') => {
+    setDiagramTheme(theme)
+  }
+
+  const handleToggleFollowSystem = () => {
+    if (followSystemTheme) {
+      // Switching to manual mode - set current effective theme as the manual selection
+      setDiagramTheme(effectiveTheme)
+    } else {
+      // Switching to follow system mode
+      setFollowSystemTheme(true)
+    }
+  }
 
   const handleDownload = async () => {
     if (!currentVisualization) return
@@ -40,7 +76,7 @@ export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVis
     try {
       const link = document.createElement('a')
       link.href = currentVisualization
-      link.download = `tonalogy-visualization-${selectedTheme}-${Date.now()}.png`
+      link.download = `tonalogy-visualization-${effectiveTheme}-${Date.now()}.png`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -57,12 +93,12 @@ export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVis
       newWindow.document.write(`
         <html>
           <head>
-            <title>Tonalogy Visualization - ${selectedTheme} theme</title>
+            <title>Tonalogy Visualization - ${effectiveTheme} theme</title>
             <style>
               body {
                 margin: 0;
                 padding: 20px;
-                background: ${selectedTheme === 'dark' ? '#1a1a1a' : '#ffffff'};
+                background: ${effectiveTheme === 'dark' ? '#1a1a1a' : '#ffffff'};
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -76,7 +112,7 @@ export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVis
             </style>
           </head>
           <body>
-            <img src="${currentVisualization}" alt="Tonalogy Harmonic Analysis Visualization (${selectedTheme} theme)" />
+            <img src="${currentVisualization}" alt="Tonalogy Harmonic Analysis Visualization (${effectiveTheme} theme)" />
           </body>
         </html>
       `)
@@ -99,21 +135,20 @@ export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVis
             </CardTitle>
             <CardDescription>
               Generated diagram showing tonal paths and modulations
-              {lightAvailable && darkAvailable && ' - switch between themes below'}
+              {lightAvailable && darkAvailable && ' - theme synced with your system preference'}
             </CardDescription>
           </div>
           
           {/* Theme selector for diagrams */}
-          {lightAvailable && darkAvailable && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Diagram Theme</label>
-              <DiagramThemeSelector
-                selected={selectedTheme}
-                onChange={setSelectedTheme}
-                lightAvailable={lightAvailable}
-                darkAvailable={darkAvailable}
-              />
-            </div>
+          {(lightAvailable || darkAvailable) && (
+            <DiagramThemeSelector
+              selected={diagramTheme}
+              onChange={handleThemeChange}
+              lightAvailable={lightAvailable}
+              darkAvailable={darkAvailable}
+              followSystemTheme={followSystemTheme}
+              onToggleFollowSystem={handleToggleFollowSystem}
+            />
           )}
           
           {/* Action buttons */}
@@ -147,7 +182,7 @@ export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVis
             {currentVisualization ? (
               <img
                 src={currentVisualization}
-                alt={`Harmonic Analysis Visualization (${selectedTheme} theme)`}
+                alt={`Harmonic Analysis Visualization (${effectiveTheme} theme)`}
                 className="max-w-full h-auto rounded-md shadow-sm"
                 style={{ maxHeight: '500px' }}
                 onError={(e) => {
@@ -158,7 +193,7 @@ export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVis
               />
             ) : (
               <div className="text-center text-muted-foreground py-8">
-                No visualization available for {selectedTheme} theme
+                No visualization available for {effectiveTheme} theme
               </div>
             )}
           </div>
@@ -166,7 +201,10 @@ export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVis
           {/* Image metadata */}
           <div className="mt-4 text-xs text-muted-foreground text-center space-y-1">
             <div>
-              Currently viewing: <strong>{selectedTheme} theme</strong>
+              Currently viewing: <strong>{effectiveTheme} theme</strong>
+              {followSystemTheme && (
+                <span className="text-primary"> (following system)</span>
+              )}
               {lightAvailable && darkAvailable && (
                 <span> • Available: light & dark themes</span>
               )}

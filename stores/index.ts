@@ -27,12 +27,18 @@ function generateId(): string {
 }
 
 interface AnalysisStore extends AnalysisState {
+  // Diagram theme settings
+  diagramTheme: 'light' | 'dark'
+  followSystemTheme: boolean
+  
   // Actions
   setLoading: (loading: boolean) => void
   setResult: (result: ProgressionAnalysisResponse | null) => void
   setError: (error: string | null) => void
   setVisualizationError: (error: string | null) => void
   setVisualization: (theme: 'light' | 'dark', visualization: string | null) => void
+  setDiagramTheme: (theme: 'light' | 'dark') => void
+  setFollowSystemTheme: (follow: boolean) => void
   clearAnalysis: () => void
 }
 
@@ -67,6 +73,8 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   result: null,
   error: null,
   visualizations: {},
+  diagramTheme: 'light',
+  followSystemTheme: true,
 
   setLoading: (isLoading) => set({ isLoading }),
   setResult: (result) => set({ result, error: null }),
@@ -78,11 +86,14 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       [theme]: visualization
     }
   })),
+  setDiagramTheme: (diagramTheme) => set({ diagramTheme, followSystemTheme: false }),
+  setFollowSystemTheme: (followSystemTheme) => set({ followSystemTheme }),
   clearAnalysis: () => set({
     isLoading: false,
     result: null,
     error: null,
     visualizations: {}
+    // Preserve diagram theme settings
   })
 }))
 
