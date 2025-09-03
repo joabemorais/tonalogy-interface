@@ -118,7 +118,7 @@ function ChordButton({
             onRemove(index)
           }}
           disabled={disabled}
-          className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center shadow-lg z-10 transition-all duration-200 animate-in zoom-in"
+          className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center shadow-lg z-10 transition-all duration-200 animate-in zoom-in border-[3px] border-red-800 hover:border-red-900"
         >
           <X className="h-4 w-4" />
         </button>
@@ -255,7 +255,7 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
       <div className="space-y-3">
         {/* Mode indicator */}
         {showRemoveButtons && chords.length > 1 && (
-          <div className="text-center">
+          <div className="text-center mb-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-destructive/10 text-destructive text-sm rounded-full">
               <X className="h-4 w-4" />
               <span>Tap to remove chords</span>

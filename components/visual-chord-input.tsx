@@ -200,7 +200,7 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                 }}
                 disabled={disabled}
                 className={cn(
-                  "absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center z-10 shadow-lg transition-all duration-200",
+                  "absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center z-10 shadow-lg transition-all duration-200 border-[3px] border-red-800 hover:border-red-900",
                   "opacity-0 group-hover:opacity-100",
                   "disabled:opacity-0"
                 )}
