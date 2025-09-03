@@ -11,7 +11,7 @@ class TonalogyAPIClient {
   private baseURL: string
 
   constructor(baseURL?: string) {
-    this.baseURL = baseURL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    this.baseURL = baseURL || process.env.NEXT_PUBLIC_API_URL || 'https://tonalogy-api.onrender.com'
     
     this.client = axios.create({
       baseURL: this.baseURL,
@@ -60,7 +60,7 @@ class TonalogyAPIClient {
    */
   async healthCheck(): Promise<boolean> {
     try {
-      await this.client.get('/health')
+      await this.client.get('/')
       return true
     } catch {
       return false
@@ -68,80 +68,102 @@ class TonalogyAPIClient {
   }
 
   /**
-   * Analyze a chord progression using Next.js API proxy
+   * Analyze a chord progression - calls API directly in production, proxy in development
    */
   async analyzeProgression(
     request: ProgressionAnalysisRequest,
     language?: Language
   ): Promise<ProgressionAnalysisResponse> {
-    // Usar endpoint local do Next.js que faz proxy para o backend
-    const url = new URL('/api/analyze', window.location.origin)
-    if (language) {
-      url.searchParams.set('lang', language)
-    }
+    // Em desenvolvimento, usar o proxy do Next.js. Em produção, chamar a API diretamente
+    const isDevelopment = process.env.NODE_ENV === 'development'
     
-    // Debug: log do request
-    console.log('📤 Sending request to:', url.toString())
-    console.log('📦 Request data:', JSON.stringify(request, null, 2))
-    
-    const response = await fetch(url.toString(), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(request)
-    })
-    
-    console.log('📥 Response status:', response.status, response.statusText)
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      console.log('❌ Error response:', errorData)
-      const apiError: APIError = {
-        message: errorData.detail || errorData.error || `HTTP ${response.status}: ${response.statusText}`,
-        status: response.status,
-        details: errorData
+    if (isDevelopment && typeof window !== 'undefined') {
+      // Usar endpoint local do Next.js que faz proxy para o backend
+      const url = new URL('/api/analyze', window.location.origin)
+      if (language) {
+        url.searchParams.set('lang', language)
       }
-      throw apiError
+      
+      // Debug: log do request
+      console.log('📤 Sending request to:', url.toString())
+      console.log('📦 Request data:', JSON.stringify(request, null, 2))
+      
+      const response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(request)
+      })
+      
+      console.log('📥 Response status:', response.status, response.statusText)
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        console.log('❌ Error response:', errorData)
+        const apiError: APIError = {
+          message: errorData.detail || errorData.error || `HTTP ${response.status}: ${response.statusText}`,
+          status: response.status,
+          details: errorData
+        }
+        throw apiError
+      }
+      
+      const result = await response.json()
+      console.log('✅ Success response:', result)
+      return result
+    } else {
+      // Em produção ou no servidor, fazer chamada direta para a API
+      const url = `/analyze${language ? `?lang=${language}` : ''}`
+      const response = await this.client.post<ProgressionAnalysisResponse>(url, request)
+      return response.data
     }
-    
-    const result = await response.json()
-    console.log('✅ Success response:', result)
-    return result
   }
 
   /**
-   * Generate visualization for a chord progression using Next.js API proxy
+   * Generate visualization for a chord progression - calls API directly in production, proxy in development
    */
   async visualizeProgression(
     request: ProgressionAnalysisRequest,
     language?: Language
   ): Promise<Blob> {
-    // Usar endpoint local do Next.js que faz proxy para o backend
-    const url = new URL('/api/visualize', window.location.origin)
-    if (language) {
-      url.searchParams.set('lang', language)
-    }
+    // Em desenvolvimento, usar o proxy do Next.js. Em produção, chamar a API diretamente
+    const isDevelopment = process.env.NODE_ENV === 'development'
     
-    const response = await fetch(url.toString(), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(request)
-    })
-    
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error')
-      const apiError: APIError = {
-        message: `Visualization failed: ${response.status} ${response.statusText}`,
-        status: response.status,
-        details: { error: errorText }
+    if (isDevelopment && typeof window !== 'undefined') {
+      // Usar endpoint local do Next.js que faz proxy para o backend
+      const url = new URL('/api/visualize', window.location.origin)
+      if (language) {
+        url.searchParams.set('lang', language)
       }
-      throw apiError
+      
+      const response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(request)
+      })
+      
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error')
+        const apiError: APIError = {
+          message: `Visualization failed: ${response.status} ${response.statusText}`,
+          status: response.status,
+          details: { error: errorText }
+        }
+        throw apiError
+      }
+      
+      return response.blob()
+    } else {
+      // Em produção ou no servidor, fazer chamada direta para a API
+      const url = `/visualize${language ? `?lang=${language}` : ''}`
+      const response = await this.client.post(url, request, {
+        responseType: 'blob'
+      })
+      return response.data
     }
-    
-    return response.blob()
   }
 
   /**
