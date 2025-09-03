@@ -141,11 +141,62 @@ tonalogy-interface/
 └── public/                # Static assets
 ```
 
+## 🏗️ Architecture
+
+This frontend is designed as a **decoupled static site** that communicates directly with the Tonalogy API backend. The architecture supports:
+
+- **Development**: Uses Next.js API routes as proxy to the backend for CORS handling
+- **Production**: Builds to static files that make direct API calls to the deployed backend
+- **Deployment**: Can be hosted on any static hosting service (Render Static Sites, Netlify, Vercel, etc.)
+
+## 🗂️ Project Organization
+
+The project follows a clean, organized structure:
+
+- **`deploy/`** - All deployment configurations and scripts
+- **`scripts/`** - Development setup and build scripts  
+- **`components/`** - React UI components
+- **`lib/`** - API client and utilities
+- **`stores/`** - State management with Zustand
+
+> **📁 See [`PROJECT_STRUCTURE.md`](./PROJECT_STRUCTURE.md) for detailed directory overview**
+
+## 🌐 Deployment Options
+
+### Development Build
+```bash
+npm run dev  # Uses proxy routes for local API communication
+```
+
+### Production Build
+```bash
+npm run build:static  # Generates static files for hosting
+# or use the automated script:
+./deploy/build-production.sh
+```
+
+The production build creates static HTML/CSS/JS files in the `out/` directory that can be deployed to any static hosting service.
+
+> **📁 See [`deploy/`](./deploy/) directory for all deployment configurations and detailed instructions.**
+
 ## 🔧 Configuration
 
 ### Environment Variables
 
+For **development**:
 - `NEXT_PUBLIC_API_URL`: Tonalogy API base URL (default: http://localhost:8000)
+- `TONALOGY_API_URL`: Internal proxy URL for development routes
+
+For **production deployment**:
+- `NEXT_PUBLIC_API_URL`: Your deployed API URL (e.g., https://your-api.onrender.com)
+
+### Deployment-Specific Configuration
+
+The project includes configuration files for popular hosting services:
+
+- `render.yaml`: Configuration for Render Static Sites
+- Static export optimized for CDN deployment
+- Environment-aware API client that adapts to development vs production
 
 ### API Integration
 
@@ -175,7 +226,7 @@ The project uses a component-driven architecture with:
 ## 📝 Usage Examples
 
 ### Basic Analysis
-1. Enter chord progression (e.g., "C Am F G")
+1. Enter chord progression (e.g., "C Am F G C")
 2. Click "Analyze" to get tonal analysis
 3. View step-by-step explanations
 4. Optionally generate visualization
