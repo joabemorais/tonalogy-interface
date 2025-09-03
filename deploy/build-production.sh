@@ -28,7 +28,14 @@ export NODE_ENV=production
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm ci
+npm ci --include=dev
+
+# Verify critical dependencies
+echo "🔍 Verifying dependencies..."
+if ! npm list tailwindcss > /dev/null 2>&1; then
+    echo "⚠️ TailwindCSS not found, installing..."
+    npm install tailwindcss autoprefixer postcss --save
+fi
 
 # Run linting
 echo "🔍 Running linter..."

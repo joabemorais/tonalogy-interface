@@ -2,7 +2,7 @@ services:
   - type: web
     name: tonalogy-interface
     env: static
-    buildCommand: npm ci && npm run build:static
+    buildCommand: npm ci --include=dev && npm run build:static
     staticPublishPath: ./out
     pullRequestPreviewsEnabled: false
     envVars:
