@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const lang = searchParams.get('lang') || 'en'
     
     // Fazer requisição para o backend Python
-    const backendUrl = process.env.TONALOGY_API_URL || 'http://localhost:8000'
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
     const response = await fetch(`${backendUrl}/analyze?lang=${lang}`, {
       method: 'POST',
       headers: {
