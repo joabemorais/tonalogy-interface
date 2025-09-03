@@ -62,87 +62,86 @@ function RecentAnalysesContent() {
   }
 
   return (
-    <Card className="h-fit sticky top-4">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Clock className="h-5 w-5" />
-          Recent Analyses
-        </CardTitle>
-        <CardDescription>Click any analysis to load it</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {recentAnalyses.map((analysis) => (
-          <div 
-            key={analysis.id}
-            className="group p-3 border rounded-lg hover:bg-accent/50 transition-all cursor-pointer hover:shadow-sm"
-            onClick={() => handleLoadAnalysis(analysis)}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="text-sm font-medium font-mono truncate">
-                    {analysis.chords.join(' → ')}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      toggleFavorite(analysis.id)
-                    }}
-                  >
-                    <Star 
-                      className={`h-3 w-3 ${
-                        analysis.isFavorite 
-                          ? 'fill-yellow-400 text-yellow-400' 
-                          : 'text-muted-foreground'
-                      }`} 
-                    />
-                  </Button>
+    <div className="space-y-4">
+      {recentAnalyses.map((analysis) => (
+        <div 
+          key={analysis.id}
+          className="group p-3 border rounded-lg hover:bg-accent/50 transition-all cursor-pointer hover:shadow-sm"
+          onClick={() => handleLoadAnalysis(analysis)}
+        >
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="text-sm font-medium font-mono truncate">
+                  {analysis.chords.join(' → ')}
                 </div>
-                
-                <div className="flex items-center gap-2 mb-1">
-                  <div className={`text-xs px-2 py-1 rounded-full ${
-                    analysis.result.is_tonal_progression 
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                  }`}>
-                    {analysis.result.is_tonal_progression 
-                      ? `✓ ${analysis.result.identified_tonality}`
-                      : '✗ Non-tonal'
-                    }
-                  </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleFavorite(analysis.id)
+                  }}
+                >
+                  <Star 
+                    className={`h-3 w-3 ${
+                      analysis.isFavorite 
+                        ? 'fill-yellow-400 text-yellow-400' 
+                        : 'text-muted-foreground'
+                    }`} 
+                  />
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-2 mb-1">
+                <div className={`text-xs px-2 py-1 rounded-full leading-none ${
+                  analysis.result.is_tonal_progression 
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                }`}>
+                  {analysis.result.is_tonal_progression 
+                    ? `✓ ${analysis.result.identified_tonality}`
+                    : '✗ Non-tonal'
+                  }
                 </div>
-                
-                <div className="text-xs text-muted-foreground">
-                  {formatTimestamp(analysis.timestamp)}
-                </div>
-                
-                <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <RotateCcw className="h-3 w-3" />
-                  <span className="text-xs">Click to load</span>
-                </div>
+              </div>
+              
+              <div className="text-xs text-muted-foreground mb-2">
+                {formatTimestamp(analysis.timestamp)}
+              </div>
+              
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <RotateCcw className="h-3 w-3" />
+                <span className="text-xs">Click to load</span>
               </div>
             </div>
           </div>
-        ))}
-        
-        {recentAnalyses.length > 0 && (
-          <div className="pt-2 border-t">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full gap-2"
-              onClick={() => window.location.href = '/history'}
-            >
-              <ExternalLink className="h-3 w-3" />
-              View All History
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      ))}
+      
+      {recentAnalyses.length > 0 && (
+        <div className="pt-2 border-t">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full gap-2"
+            onClick={() => window.location.href = '/history'}
+          >
+            <ExternalLink className="h-3 w-3" />
+            View All History
+          </Button>
+        </div>
+      )}
+      
+      {recentAnalyses.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-sm text-muted-foreground">
+            No analyses yet. Start by analyzing a chord progression!
+          </p>
+        </div>
+      )}
+    </div>
   )
 }
 
