@@ -1,0 +1,9 @@
+# Deployment artifacts
+*.log
+*.tmp
+.env.local
+.env
+
+# Build outputs
+/out/
+/dist/
