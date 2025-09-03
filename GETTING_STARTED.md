@@ -1,4 +1,29 @@
-# Tonalogy Interface - Quick Start Guide
+# Tonalogy Interface - Q## 🚀 Quick Start
+
+### Automated Setup (Recommended)
+
+```bash
+./scripts/dev-setup.sh
+```
+
+This script will:
+- Create `.env.local` from development template
+- Install dependencies
+- Check API connectivity
+- Provide next steps
+
+### Manual Setup
+
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Set up environment**:
+   ```bash
+   cp deploy/.env.development .env.local
+   ```
+   Edit `.env.local` if your API runs on a different URL.uide
 
 ## 🎯 What You Have Now
 
@@ -43,10 +68,29 @@ A complete, modern web interface for the Tonalogy API with:
 
 4. **Open browser**: http://localhost:3000
 
+## 🚀 Production Deployment
+
+For deploying to production (static hosting):
+
+1. **Use automated build script**:
+   ```bash
+   ./deploy/build-production.sh
+   ```
+
+2. **Or manual build**:
+   ```bash
+   export NEXT_PUBLIC_API_URL=https://tonalogy-api.onrender.com
+   npm run build:static
+   ```
+
+3. **Deploy**: Upload the `out/` directory to your static hosting service
+
+> **📚 See [`deploy/DEPLOYMENT.md`](./deploy/DEPLOYMENT.md) for detailed deployment instructions**
+
 ## 🎹 How to Use
 
 ### Basic Workflow
-1. **Enter chords**: Type chord progressions like "C Am F G"
+1. **Enter chords**: Type chord progressions like "C Am F G C" (must end on tonic)
 2. **Analyze**: Click "Analyze" to get tonal analysis
 3. **Visualize**: Click "Visualize" to generate diagrams
 4. **Download**: Save diagrams as PNG files

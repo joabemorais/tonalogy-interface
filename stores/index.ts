@@ -155,7 +155,7 @@ export const useSettingsStore = create<SettingsStore>()(
     (set) => ({
       language: 'en' as Language,
       theme: 'system' as Theme,
-      apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+      apiUrl: process.env.NEXT_PUBLIC_API_URL || 'https://tonalogy-api.onrender.com',
       autoSave: true,
 
       setLanguage: (language) => set({ language }),
