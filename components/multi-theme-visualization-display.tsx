@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Download, Eye, Maximize2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -180,9 +181,11 @@ export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVis
         <div className="relative bg-secondary/10 rounded-lg p-4 custom-scrollbar">
           <div className="flex justify-center">
             {currentVisualization ? (
-              <img
+              <Image
                 src={currentVisualization}
                 alt={`Harmonic Analysis Visualization (${effectiveTheme} theme)`}
+                width={800}
+                height={500}
                 className="max-w-full h-auto rounded-md shadow-sm"
                 style={{ maxHeight: '500px' }}
                 onError={(e) => {
@@ -190,6 +193,7 @@ export function MultiThemeVisualizationDisplay({ visualizations }: MultiThemeVis
                   const target = e.target as HTMLImageElement
                   target.style.display = 'none'
                 }}
+                unoptimized={true}
               />
             ) : (
               <div className="text-center text-muted-foreground py-8">
