@@ -113,10 +113,37 @@ class TonalogyAPIClient {
       console.log('✅ Success response:', result)
       return result
     } else {
-      // Em produção ou no servidor, fazer chamada direta para a API
-      const url = `/analyze${language ? `?lang=${language}` : ''}`
-      const response = await this.client.post<ProgressionAnalysisResponse>(url, request)
-      return response.data
+      // Em produção ou no servidor, fazer chamada direta para a API usando fetch simples
+      const url = `${this.baseURL}/analyze${language ? `?lang=${language}` : ''}`
+      
+      console.log('📤 Production request to:', url)
+      console.log('📦 Request data:', JSON.stringify(request, null, 2))
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(request)
+      })
+      
+      console.log('📥 Response status:', response.status, response.statusText)
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        console.log('❌ Error response:', errorData)
+        const apiError: APIError = {
+          message: errorData.detail || errorData.error || `HTTP ${response.status}: ${response.statusText}`,
+          status: response.status,
+          details: errorData
+        }
+        throw apiError
+      }
+      
+      const result = await response.json()
+      console.log('✅ Success response:', result)
+      return result
     }
   }
 
