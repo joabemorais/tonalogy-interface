@@ -115,7 +115,7 @@ export function VisualizationDisplay({ imageData, theme }: VisualizationDisplayP
           
           {/* Image metadata */}
           <div className="mt-4 text-xs text-muted-foreground text-center">
-            Click "Full View" to see the diagram in a larger window, or "Download" to save it as a PNG file.
+            Click &quot;Full View&quot; to see the diagram in a larger window, or &quot;Download&quot; to save it as a PNG file.
           </div>
         </div>
       </CardContent>
