@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Music, Play, Download, RefreshCw } from 'lucide-react'
+import { Music, Play, Download, RefreshCw, Eye } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { VisualChordInput } from '@/components/visual-chord-input'
 import { TonalitySelector } from '@/components/tonality-selector'
-import { ThemeSelector } from '@/components/theme-selector'
 import { AnalysisResults } from '@/components/analysis-results'
-import { VisualizationDisplay } from '@/components/visualization-display'
+import { VisualizationMode } from '@/components/visualization-mode'
+import { MultiThemeVisualizationDisplay } from '@/components/multi-theme-visualization-display'
 import { useAnalysisStore, useHistoryStore, useSettingsStore } from '@/stores'
 import { apiClient } from '@/lib/api-client'
 import { validateChords, downloadBlob, blobToBase64, normalizeChordsForAPI } from '@/lib/utils'
@@ -18,10 +18,10 @@ import { ProgressionAnalysisRequest, ProgressionAnalysisResponse } from '@/types
 export function HarmonicAnalyzer() {
   const [chords, setChords] = useState<string[]>(['Am', 'F', 'G', 'C'])
   const [tonalities, setTonalities] = useState<string[]>([])
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [isGeneratingVisualization, setIsGeneratingVisualization] = useState(false)
   
   const { language } = useSettingsStore()
-  const { setLoading, setResult, setError, setVisualization, result, error, isLoading, visualization } = useAnalysisStore()
+  const { setLoading, setResult, setError, setVisualizationError, setVisualization, result, error, isLoading, visualizations } = useAnalysisStore()
   const { addToHistory } = useHistoryStore()
 
   // Analysis mutation
@@ -52,19 +52,33 @@ export function HarmonicAnalyzer() {
     }
   })
 
-  // Visualization mutation
-  const visualizationMutation = useMutation({
-    mutationFn: async (request: ProgressionAnalysisRequest): Promise<string> => {
-      const blob = await apiClient.visualizeProgression(request, language)
-      return blobToBase64(blob)
-    },
-    onSuccess: (base64) => {
-      setVisualization(base64)
-    },
-    onError: (error: any) => {
-      setError(error.message || 'Visualization failed')
+  // Generate visualization for specific theme
+  const generateVisualization = async (theme: 'light' | 'dark') => {
+    const validation = validateChords(chords)
+    
+    if (!validation.allValid) {
+      setVisualizationError('Please fix invalid chords before generating visualization')
+      return
     }
-  })
+
+    const request: ProgressionAnalysisRequest = {
+      chords: normalizeChordsForAPI(validation.validChords),
+      tonalities_to_test: tonalities,
+      theme
+    }
+
+    try {
+      const blob = await apiClient.visualizeProgression(request, language)
+      const base64 = await blobToBase64(blob)
+      setVisualization(theme, base64)
+      // Clear any previous visualization errors on success
+      if (error && error.includes('visualization')) {
+        setVisualizationError(null)
+      }
+    } catch (error: any) {
+      setVisualizationError(error.message || `Failed to generate ${theme} visualization`)
+    }
+  }
 
   const handleAnalyze = () => {
     const validation = validateChords(chords)
@@ -77,45 +91,76 @@ export function HarmonicAnalyzer() {
     const request: ProgressionAnalysisRequest = {
       chords: normalizeChordsForAPI(validation.validChords),
       tonalities_to_test: tonalities,
-      theme
+      theme: 'light' // Default theme for analysis, visualization is separate
     }
 
     analysisMutation.mutate(request)
   }
 
-  const handleVisualize = () => {
+  const handleGenerateBoth = async () => {
     if (!result?.is_tonal_progression) {
-      setError('Cannot visualize non-tonal progression')
+      setVisualizationError('Cannot visualize non-tonal progression')
       return
     }
 
-    const validation = validateChords(chords)
+    setIsGeneratingVisualization(true)
+    setVisualizationError(null)
     
-    if (!validation.allValid) {
-      setError('Please fix invalid chords before visualizing')
+    try {
+      // Generate both themes in parallel
+      await Promise.all([
+        generateVisualization('light'),
+        generateVisualization('dark')
+      ])
+    } finally {
+      setIsGeneratingVisualization(false)
+    }
+  }
+
+  const handleGenerateLight = async () => {
+    if (!result?.is_tonal_progression) {
+      setVisualizationError('Cannot visualize non-tonal progression')
       return
     }
 
-    const request: ProgressionAnalysisRequest = {
-      chords: normalizeChordsForAPI(validation.validChords),
-      tonalities_to_test: tonalities,
-      theme
+    setIsGeneratingVisualization(true)
+    setVisualizationError(null)
+    
+    try {
+      await generateVisualization('light')
+    } finally {
+      setIsGeneratingVisualization(false)
+    }
+  }
+
+  const handleGenerateDark = async () => {
+    if (!result?.is_tonal_progression) {
+      setVisualizationError('Cannot visualize non-tonal progression')
+      return
     }
 
-    visualizationMutation.mutate(request)
+    setIsGeneratingVisualization(true)
+    setVisualizationError(null)
+    
+    try {
+      await generateVisualization('dark')
+    } finally {
+      setIsGeneratingVisualization(false)
+    }
   }
 
   const handleDownload = async () => {
-    if (!visualization) return
+    const currentVisualization = visualizations.light || visualizations.dark
+    if (!currentVisualization) return
 
     try {
-      const response = await fetch(visualization)
+      const response = await fetch(currentVisualization)
       const blob = await response.blob()
       const normalizedChords = normalizeChordsForAPI(chords)
       const filename = `tonalogy-${normalizedChords.join('_')}-${Date.now()}.png`
       downloadBlob(blob, filename)
     } catch (error) {
-      setError('Failed to download visualization')
+      setVisualizationError('Failed to download visualization')
     }
   }
 
@@ -124,8 +169,11 @@ export function HarmonicAnalyzer() {
     setTonalities([])
     setResult(null)
     setError(null)
-    setVisualization(null)
+    setVisualization('light', null)
+    setVisualization('dark', null)
   }
+
+  const hasAnyVisualization = !!(visualizations.light || visualizations.dark)
 
   return (
     <div className="space-y-6">
@@ -161,16 +209,6 @@ export function HarmonicAnalyzer() {
             />
           </div>
 
-          {/* Theme Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Visualization Theme</label>
-            <ThemeSelector
-              selected={theme}
-              onChange={setTheme}
-              disabled={isLoading}
-            />
-          </div>
-
           {/* Action Buttons */}
           <div className="flex gap-2 pt-4">
             <Button 
@@ -185,20 +223,8 @@ export function HarmonicAnalyzer() {
               )}
               Analyze
             </Button>
-            
-            <Button
-              onClick={handleVisualize}
-              disabled={!result?.is_tonal_progression || visualizationMutation.isPending}
-              variant="outline"
-            >
-              {visualizationMutation.isPending ? (
-                <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                'Visualize'
-              )}
-            </Button>
 
-            {visualization && (
+            {hasAnyVisualization && (
               <Button
                 onClick={handleDownload}
                 variant="outline"
@@ -227,12 +253,33 @@ export function HarmonicAnalyzer() {
         />
       )}
 
-      {/* Visualization Section */}
-      {visualization && (
-        <VisualizationDisplay 
-          imageData={visualization}
-          theme={theme}
-        />
+      {/* Visualization Generation Section */}
+      {result?.is_tonal_progression && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Generate Diagram
+            </CardTitle>
+            <CardDescription>
+              Create visual diagrams showing tonal paths and modulations
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <VisualizationMode
+              onGenerateBoth={handleGenerateBoth}
+              onGenerateLight={handleGenerateLight}
+              onGenerateDark={handleGenerateDark}
+              isLoading={isGeneratingVisualization}
+              disabled={!result?.is_tonal_progression}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Visualization Display Section */}
+      {hasAnyVisualization && (
+        <MultiThemeVisualizationDisplay visualizations={visualizations} />
       )}
     </div>
   )
