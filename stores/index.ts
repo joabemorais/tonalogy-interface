@@ -8,6 +8,24 @@ import {
   Theme
 } from '@/types'
 
+// Fallback function for crypto.randomUUID() compatibility
+function generateId(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    try {
+      return crypto.randomUUID()
+    } catch (error) {
+      // Fallback if crypto.randomUUID fails
+    }
+  }
+  
+  // Fallback implementation for compatibility
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
+
 interface AnalysisStore extends AnalysisState {
   // Actions
   setLoading: (loading: boolean) => void
@@ -69,7 +87,7 @@ export const useHistoryStore = create<HistoryStore>()(
       favorites: [],
 
       addToHistory: (analysis) => {
-        const id = crypto.randomUUID()
+        const id = generateId()
         const timestamp = new Date()
         const newEntry: AnalysisHistory = {
           ...analysis,
