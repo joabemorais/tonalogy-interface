@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Music, Play, Download, RefreshCw, Eye } from 'lucide-react'
+import { Music, Play, Download, RefreshCw, Eye, ChevronDown, ChevronUp } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { VisualChordInput } from '@/components/visual-chord-input'
@@ -19,6 +19,7 @@ export function HarmonicAnalyzer() {
   const [chords, setChords] = useState<string[]>(['Am', 'F', 'G', 'C'])
   const [tonalities, setTonalities] = useState<string[]>([])
   const [isGeneratingVisualization, setIsGeneratingVisualization] = useState(false)
+  const [isTonalitySectionOpen, setIsTonalitySectionOpen] = useState(false)
   
   const { language } = useSettingsStore()
   const { setLoading, setResult, setError, setVisualizationError, setVisualization, result, error, isLoading, visualizations } = useAnalysisStore()
@@ -209,14 +210,41 @@ export function HarmonicAnalyzer() {
             />
           </div>
 
-          {/* Tonality Selection */}
+          {/* Tonality Selection - Accordion */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Tonalities to Test (Optional)</label>
-            <TonalitySelector
-              selected={tonalities}
-              onChange={setTonalities}
-              disabled={isLoading}
-            />
+            <button
+              onClick={() => setIsTonalitySectionOpen(!isTonalitySectionOpen)}
+              className="w-full flex items-center justify-between text-sm font-medium hover:text-primary transition-colors focus:outline-none focus:text-primary"
+            >
+              <div className="flex items-center gap-2">
+                {isTonalitySectionOpen ? (
+                  <ChevronUp className="h-5 w-5 transition-transform" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 transition-transform" />
+                )}
+                <span>Tonalities to Test</span>
+                <span className="text-xs text-muted-foreground font-normal">(Optional)</span>
+                {tonalities.length > 0 && (
+                  <span className="px-2 py-0.5 text-xs bg-primary/10 text-primary rounded-full">
+                    {tonalities.length} selected
+                  </span>
+                )}
+              </div>
+            </button>
+            
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+              isTonalitySectionOpen 
+                ? 'max-h-[600px] opacity-100' 
+                : 'max-h-0 opacity-0'
+            }`}>
+              <div className="pt-2">
+                <TonalitySelector
+                  selected={tonalities}
+                  onChange={setTonalities}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
           </div>
 
           {/* Action Buttons */}
