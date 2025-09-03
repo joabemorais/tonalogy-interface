@@ -29,7 +29,10 @@ export interface AnalysisState {
   isLoading: boolean
   result: ProgressionAnalysisResponse | null
   error: string | null
-  visualization: string | null // Base64 image or URL
+  visualizations: {
+    light?: string // Base64 image or URL
+    dark?: string // Base64 image or URL
+  }
 }
 
 export interface ChordInput {

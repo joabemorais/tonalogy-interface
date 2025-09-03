@@ -27,11 +27,18 @@ function generateId(): string {
 }
 
 interface AnalysisStore extends AnalysisState {
+  // Diagram theme settings
+  diagramTheme: 'light' | 'dark'
+  followSystemTheme: boolean
+  
   // Actions
   setLoading: (loading: boolean) => void
   setResult: (result: ProgressionAnalysisResponse | null) => void
   setError: (error: string | null) => void
-  setVisualization: (visualization: string | null) => void
+  setVisualizationError: (error: string | null) => void
+  setVisualization: (theme: 'light' | 'dark', visualization: string | null) => void
+  setDiagramTheme: (theme: 'light' | 'dark') => void
+  setFollowSystemTheme: (follow: boolean) => void
   clearAnalysis: () => void
 }
 
@@ -65,17 +72,28 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   isLoading: false,
   result: null,
   error: null,
-  visualization: null,
+  visualizations: {},
+  diagramTheme: 'light',
+  followSystemTheme: true,
 
   setLoading: (isLoading) => set({ isLoading }),
   setResult: (result) => set({ result, error: null }),
   setError: (error) => set({ error, result: null }),
-  setVisualization: (visualization) => set({ visualization }),
+  setVisualizationError: (error) => set({ error }), // Don't clear result for visualization errors
+  setVisualization: (theme, visualization) => set((state) => ({
+    visualizations: {
+      ...state.visualizations,
+      [theme]: visualization
+    }
+  })),
+  setDiagramTheme: (diagramTheme) => set({ diagramTheme, followSystemTheme: false }),
+  setFollowSystemTheme: (followSystemTheme) => set({ followSystemTheme }),
   clearAnalysis: () => set({
     isLoading: false,
     result: null,
     error: null,
-    visualization: null
+    visualizations: {}
+    // Preserve diagram theme settings
   })
 }))
 
