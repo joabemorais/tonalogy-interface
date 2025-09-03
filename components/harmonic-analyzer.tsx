@@ -17,14 +17,13 @@ import { validateChords, downloadBlob, blobToBase64, normalizeChordsForAPI } fro
 import { ProgressionAnalysisRequest, ProgressionAnalysisResponse } from '@/types'
 
 export function HarmonicAnalyzer() {
-  const [chords, setChords] = useState<string[]>(['Am', 'F', 'G', 'C'])
   const [tonalities, setTonalities] = useState<string[]>([])
   const [isGeneratingVisualization, setIsGeneratingVisualization] = useState(false)
   const [isTonalitySectionOpen, setIsTonalitySectionOpen] = useState(false)
   
   const isMobile = useIsMobile()
   const { language } = useSettingsStore()
-  const { setLoading, setResult, setError, setVisualizationError, setVisualization, result, error, isLoading, visualizations } = useAnalysisStore()
+  const { setLoading, setResult, setError, setVisualizationError, setVisualization, setChords, result, error, isLoading, visualizations, chords } = useAnalysisStore()
   const { addToHistory } = useHistoryStore()
 
   // Analysis mutation
