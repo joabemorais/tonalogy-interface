@@ -87,6 +87,8 @@ export const useHistoryStore = create<HistoryStore>()(
       favorites: [],
 
       addToHistory: (analysis) => {
+        if (typeof window === 'undefined') return // Skip on server
+        
         const id = generateId()
         const timestamp = new Date()
         const newEntry: AnalysisHistory = {
@@ -102,6 +104,8 @@ export const useHistoryStore = create<HistoryStore>()(
       },
 
       removeFromHistory: (id) => {
+        if (typeof window === 'undefined') return // Skip on server
+        
         set((state) => ({
           history: state.history.filter(item => item.id !== id),
           favorites: state.favorites.filter(fav => fav !== id)
@@ -109,6 +113,8 @@ export const useHistoryStore = create<HistoryStore>()(
       },
 
       toggleFavorite: (id) => {
+        if (typeof window === 'undefined') return // Skip on server
+        
         set((state) => {
           const isFavorited = state.favorites.includes(id)
           const newFavorites = isFavorited
@@ -126,9 +132,14 @@ export const useHistoryStore = create<HistoryStore>()(
         })
       },
 
-      clearHistory: () => set({ history: [], favorites: [] }),
+      clearHistory: () => {
+        if (typeof window === 'undefined') return // Skip on server
+        set({ history: [], favorites: [] })
+      },
 
       getRecentAnalyses: (limit = 10) => {
+        if (typeof window === 'undefined') return [] // Return empty on server
+        
         return get().history
           .sort((a, b) => {
             const timestampA = a.timestamp instanceof Date ? a.timestamp : new Date(a.timestamp)
@@ -140,11 +151,12 @@ export const useHistoryStore = create<HistoryStore>()(
     }),
     {
       name: 'tonalogy-history',
-      storage: createJSONStorage(() => localStorage),
+      storage: typeof window !== 'undefined' ? createJSONStorage(() => localStorage) : undefined,
       partialize: (state) => ({
         history: state.history,
         favorites: state.favorites
-      })
+      }),
+      skipHydration: true, // Important for SSG compatibility
     }
   )
 )

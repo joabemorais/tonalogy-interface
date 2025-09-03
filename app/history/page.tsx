@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import { History, Star, Clock, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -5,7 +8,29 @@ import { useHistoryStore } from '@/stores'
 import { formatTimestamp } from '@/lib/utils'
 
 export default function HistoryPage() {
+  const [mounted, setMounted] = useState(false)
   const { history, removeFromHistory, toggleFavorite, clearHistory } = useHistoryStore()
+
+  useEffect(() => {
+    setMounted(true)
+    // Trigger store hydration on client side
+    useHistoryStore.persist.rehydrate()
+  }, [])
+
+  // Don't render until client-side hydration is complete
+  if (!mounted) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
+            <History className="h-8 w-8" />
+            Analysis History
+          </h1>
+          <p className="text-muted-foreground">Loading your analysis history...</p>
+        </div>
+      </div>
+    )
+  }
 
   const favoriteAnalyses = history.filter(analysis => analysis.isFavorite)
   const recentAnalyses = history.filter(analysis => !analysis.isFavorite)
