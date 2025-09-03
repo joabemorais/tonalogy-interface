@@ -88,6 +88,10 @@ export function HarmonicAnalyzer() {
       return
     }
 
+    // Clear previous visualizations when starting new analysis
+    setVisualization('light', null)
+    setVisualization('dark', null)
+
     const request: ProgressionAnalysisRequest = {
       chords: normalizeChordsForAPI(validation.validChords),
       tonalities_to_test: tonalities,
@@ -174,6 +178,12 @@ export function HarmonicAnalyzer() {
   }
 
   const hasAnyVisualization = !!(visualizations.light || visualizations.dark)
+  const hasBothVisualizations = !!(visualizations.light && visualizations.dark)
+  
+  // Show generation section only if:
+  // 1. Analysis is tonal AND
+  // 2. Don't have both visualizations yet
+  const showGenerationSection = result?.is_tonal_progression && !hasBothVisualizations
 
   return (
     <div className="space-y-6">
@@ -254,7 +264,7 @@ export function HarmonicAnalyzer() {
       )}
 
       {/* Visualization Generation Section */}
-      {result?.is_tonal_progression && (
+      {showGenerationSection && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -272,6 +282,10 @@ export function HarmonicAnalyzer() {
               onGenerateDark={handleGenerateDark}
               isLoading={isGeneratingVisualization}
               disabled={!result?.is_tonal_progression}
+              availableThemes={{
+                light: !!visualizations.light,
+                dark: !!visualizations.dark
+              }}
             />
           </CardContent>
         </Card>
