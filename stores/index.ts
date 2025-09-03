@@ -31,7 +31,8 @@ interface AnalysisStore extends AnalysisState {
   setLoading: (loading: boolean) => void
   setResult: (result: ProgressionAnalysisResponse | null) => void
   setError: (error: string | null) => void
-  setVisualization: (visualization: string | null) => void
+  setVisualizationError: (error: string | null) => void
+  setVisualization: (theme: 'light' | 'dark', visualization: string | null) => void
   clearAnalysis: () => void
 }
 
@@ -65,17 +66,23 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   isLoading: false,
   result: null,
   error: null,
-  visualization: null,
+  visualizations: {},
 
   setLoading: (isLoading) => set({ isLoading }),
   setResult: (result) => set({ result, error: null }),
   setError: (error) => set({ error, result: null }),
-  setVisualization: (visualization) => set({ visualization }),
+  setVisualizationError: (error) => set({ error }), // Don't clear result for visualization errors
+  setVisualization: (theme, visualization) => set((state) => ({
+    visualizations: {
+      ...state.visualizations,
+      [theme]: visualization
+    }
+  })),
   clearAnalysis: () => set({
     isLoading: false,
     result: null,
     error: null,
-    visualization: null
+    visualizations: {}
   })
 }))
 
