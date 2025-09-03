@@ -465,9 +465,8 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
         )}
       </div>
 
-      {/* Help text and chord count */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>Click to edit • Hover to remove</span>
+      {/* Chord count */}
+      <div className="flex items-center justify-end text-xs text-muted-foreground">
         <span className="font-medium">
           {chords.length} / {maxChords} chords
         </span>
