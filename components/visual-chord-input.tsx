@@ -62,6 +62,29 @@ function parseChordSymbol(chord: string): ChordBuilder | null {
 
 export function VisualChordInput({ chords, onChange, disabled = false, maxChords = 12 }: VisualChordInputProps) {
   const isMobile = useIsMobile()
+  
+  // Always call hooks in the same order (required by React hooks rules)
+  const [isOpen, setIsOpen] = useState(false)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [builder, setBuilder] = useState<ChordBuilder>({
+    note: 'C',
+    accidental: '♮',
+    type: CHORD_TYPES[0]
+  })
+
+  // Handle ESC key to close panel
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        handleCloseChordBuilder()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen])
 
   // Use mobile keyboard on mobile devices
   if (isMobile) {
@@ -76,13 +99,6 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
   }
 
   // Desktop/tablet layout - same behavior as mobile (no empty chords)
-  const [isOpen, setIsOpen] = useState(false)
-  const [editingIndex, setEditingIndex] = useState<number | null>(null)
-  const [builder, setBuilder] = useState<ChordBuilder>({
-    note: 'C',
-    accidental: '♮',
-    type: CHORD_TYPES[0]
-  })
 
   const handleOpenChordBuilder = (index?: number) => {
     if (disabled) return
@@ -108,6 +124,18 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
   }
 
   const handleCloseChordBuilder = () => {
+    // Auto-apply changes only when editing existing chords
+    if (editingIndex !== null) {
+      const chordSymbol = buildChordSymbol(builder)
+      const currentChord = chords[editingIndex]
+      if (currentChord !== chordSymbol) {
+        const newChords = [...chords]
+        newChords[editingIndex] = chordSymbol
+        onChange(newChords)
+      }
+    }
+    // For adding new chords, don't auto-apply - user must click "Add Chord"
+    
     setIsOpen(false)
     setEditingIndex(null)
   }
@@ -155,9 +183,9 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                 "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
                 "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
-                "flex items-center justify-center shadow-sm hover:shadow-lg",
-                "active:scale-95 hover:scale-105",
-                "border-border hover:border-primary/50"
+                "flex items-center justify-center shadow-sm hover:shadow-md",
+                "border-border hover:border-primary/50",
+                isOpen && editingIndex === index && "border-primary shadow-md"
               )}
             >
               <span className="select-none">{chord}</span>
@@ -173,143 +201,261 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                 disabled={disabled}
                 className={cn(
                   "absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center z-10 shadow-lg transition-all duration-200",
-                  "opacity-0 group-hover:opacity-100 hover:scale-110",
+                  "opacity-0 group-hover:opacity-100",
                   "disabled:opacity-0"
                 )}
               >
                 <X className="h-4 w-4" />
               </button>
             )}
+
+            {/* Chord builder panel for editing - positioned next to the chord being edited */}
+            {isOpen && editingIndex === index && !disabled && (
+              <>
+                {/* Backdrop */}
+                <div
+                  className="fixed inset-0 bg-black/20 z-40"
+                  onClick={handleCloseChordBuilder}
+                />
+                
+                {/* Painel posicionado abaixo do botão de edição */}
+                <div className="absolute left-1/2 top-full -translate-x-1/2 mt-2 p-3 bg-background border rounded-lg shadow-xl z-50 w-[320px] max-h-[380px] overflow-y-auto animate-in fade-in zoom-in duration-200">
+                  {/* Header with preview */}
+                  <div className="flex items-center justify-between mb-3 pb-2 border-b">
+                    <span className="text-xs text-muted-foreground font-medium">
+                      Edit Chord
+                    </span>
+                    <div className="text-xl font-bold px-3 py-1.5 bg-accent rounded-lg min-w-[70px] text-center shadow-sm">
+                      {buildChordSymbol(builder)}
+                    </div>
+                  </div>
+
+                  {/* Grid layout */}
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {/* Note selector */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {NOTES.map((note) => (
+                          <button
+                            key={note}
+                            onClick={() => handleBuilderChange({ note })}
+                            className={cn(
+                              "h-12 text-lg font-semibold rounded-lg border-2 transition-all duration-200",
+                              "flex items-center justify-center shadow-sm",
+                              builder.note === note
+                                ? "border-primary shadow-md scale-105"
+                                : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
+                            )}
+                          >
+                            {note}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Accidental selector */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-muted-foreground text-center block">Accidental</label>
+                      <div className="space-y-2">
+                        {ACCIDENTALS.map((acc) => (
+                          <button
+                            key={acc}
+                            onClick={() => handleBuilderChange({ accidental: acc })}
+                            className={cn(
+                              "w-full h-12 text-lg font-semibold rounded-lg border-2 transition-all duration-200",
+                              "flex items-center justify-center shadow-sm",
+                              builder.accidental === acc
+                                ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
+                                : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
+                            )}
+                          >
+                            {acc === '♮' ? '♮' : acc}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Chord type selector */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-muted-foreground text-center block">Type</label>
+                      <div className="space-y-2">
+                        {CHORD_TYPES.map((type) => (
+                          <button
+                            key={type.symbol}
+                            onClick={() => handleBuilderChange({ type })}
+                            className={cn(
+                              "w-full h-12 px-3 text-base font-semibold rounded-lg border-2 transition-all duration-200",
+                              "flex items-center justify-center shadow-sm",
+                              builder.type.symbol === type.symbol
+                                ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
+                                : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
+                            )}
+                          >
+                            {type.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={handleCloseChordBuilder}
+                      className="px-3 py-1.5 text-xs bg-muted text-muted-foreground rounded-md hover:bg-muted/80 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleConfirmChord}
+                      className="px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-md"
+                    >
+                      Update Chord
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         ))}
         
         {/* Add chord button */}
         {chords.length < maxChords && (
-          <button
-            onClick={() => handleOpenChordBuilder()}
-            disabled={disabled}
-            className={cn(
-              "w-20 h-14 border-2 border-dashed border-muted-foreground/40 rounded-xl",
-              "hover:border-primary hover:bg-primary/10 transition-all duration-200",
-              "focus:outline-none focus:ring-2 focus:ring-ring",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              "flex items-center justify-center group shadow-sm hover:shadow-md",
-              "hover:scale-105 active:scale-95"
+          <div className="relative">
+            <button
+              onClick={() => handleOpenChordBuilder()}
+              disabled={disabled}
+              className={cn(
+                "w-20 h-14 border-2 border-dashed border-muted-foreground/40 rounded-xl",
+                "transition-all duration-200",
+                "focus:outline-none focus:ring-2 focus:ring-ring",
+                "disabled:opacity-50 disabled:cursor-not-allowed",
+                "flex items-center justify-center group shadow-sm",
+                (isOpen && editingIndex === null)
+                  ? "border-primary bg-primary/10 shadow-md"
+                  : "hover:border-primary hover:bg-primary/10 hover:shadow-md"
+              )}
+            >
+              <Plus className={cn(
+                "h-6 w-6 transition-colors",
+                (isOpen && editingIndex === null)
+                  ? "text-primary"
+                  : "text-muted-foreground group-hover:text-primary"
+              )} />
+            </button>
+            
+            {/* Chord builder panel - positioned relative to button */}
+            {isOpen && editingIndex === null && !disabled && (
+              <>
+                {/* Backdrop */}
+                <div
+                  className="fixed inset-0 bg-black/20 z-40"
+                  onClick={handleCloseChordBuilder}
+                />
+                
+                {/* Panel posicionado abaixo do botão de adicionar */}
+                <div className="absolute left-1/2 top-full -translate-x-1/2 mt-2 p-3 bg-background border rounded-lg shadow-xl z-50 w-[320px] max-h-[380px] overflow-y-auto animate-in fade-in zoom-in duration-200">
+                  {/* Header with preview */}
+                  <div className="flex items-center justify-between mb-3 pb-2 border-b">
+                    <span className="text-xs text-muted-foreground font-medium">
+                      Add Chord
+                    </span>
+                    <div className="text-xl font-bold px-3 py-1.5 bg-accent rounded-lg min-w-[70px] text-center shadow-sm">
+                      {buildChordSymbol(builder)}
+                    </div>
+                  </div>
+
+                  {/* Grid layout */}
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {/* Note selector */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {NOTES.map((note) => (
+                          <button
+                            key={note}
+                            onClick={() => handleBuilderChange({ note })}
+                            className={cn(
+                              "h-12 text-lg font-semibold rounded-lg border-2 transition-all duration-200",
+                              "flex items-center justify-center shadow-sm",
+                              builder.note === note
+                                ? "border-primary shadow-md scale-105"
+                                : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
+                            )}
+                          >
+                            {note}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Accidental selector */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-muted-foreground text-center block">Accidental</label>
+                      <div className="space-y-2">
+                        {ACCIDENTALS.map((acc) => (
+                          <button
+                            key={acc}
+                            onClick={() => handleBuilderChange({ accidental: acc })}
+                            className={cn(
+                              "w-full h-12 text-lg font-semibold rounded-lg border-2 transition-all duration-200",
+                              "flex items-center justify-center shadow-sm",
+                              builder.accidental === acc
+                                ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
+                                : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
+                            )}
+                          >
+                            {acc === '♮' ? '♮' : acc}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Chord type selector */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-muted-foreground text-center block">Type</label>
+                      <div className="space-y-2">
+                        {CHORD_TYPES.map((type) => (
+                          <button
+                            key={type.symbol}
+                            onClick={() => handleBuilderChange({ type })}
+                            className={cn(
+                              "w-full h-12 px-3 text-base font-semibold rounded-lg border-2 transition-all duration-200",
+                              "flex items-center justify-center shadow-sm",
+                              builder.type.symbol === type.symbol
+                                ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
+                                : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
+                            )}
+                          >
+                            {type.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={handleCloseChordBuilder}
+                      className="px-3 py-1.5 text-xs bg-muted text-muted-foreground rounded-md hover:bg-muted/80 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleConfirmChord}
+                      className="px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-md"
+                    >
+                      Add Chord
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
-          >
-            <Plus className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-          </button>
+          </div>
         )}
       </div>
-
-      {/* Chord builder panel */}
-      {isOpen && !disabled && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/20 z-40"
-            onClick={handleCloseChordBuilder}
-          />
-          
-          {/* Panel */}
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 bg-background border rounded-xl shadow-xl z-50 min-w-[450px] max-w-[550px] animate-in fade-in zoom-in duration-200">
-            {/* Header with preview */}
-            <div className="flex items-center justify-between mb-4 pb-3 border-b">
-              <span className="text-xs text-muted-foreground font-medium">
-                {editingIndex !== null ? 'Edit Chord' : 'Add Chord'}
-              </span>
-              <div className="text-2xl font-bold px-4 py-2 bg-accent rounded-xl min-w-[80px] text-center shadow-sm">
-                {buildChordSymbol(builder)}
-              </div>
-            </div>
-
-            {/* Grid layout */}
-            <div className="grid grid-cols-3 gap-6 mb-6">
-              {/* Note selector */}
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {NOTES.map((note) => (
-                    <button
-                      key={note}
-                      onClick={() => handleBuilderChange({ note })}
-                      className={cn(
-                        "h-12 text-lg font-semibold rounded-lg border-2 transition-all duration-200",
-                        "flex items-center justify-center shadow-sm",
-                        builder.note === note
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
-                          : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
-                      )}
-                    >
-                      {note}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Accidental selector */}
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-muted-foreground text-center block">Accidental</label>
-                <div className="space-y-2">
-                  {ACCIDENTALS.map((acc) => (
-                    <button
-                      key={acc}
-                      onClick={() => handleBuilderChange({ accidental: acc })}
-                      className={cn(
-                        "w-full h-12 text-lg font-semibold rounded-lg border-2 transition-all duration-200",
-                        "flex items-center justify-center shadow-sm",
-                        builder.accidental === acc
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
-                          : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
-                      )}
-                    >
-                      {acc === '♮' ? '♮' : acc}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Chord type selector */}
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-muted-foreground text-center block">Type</label>
-                <div className="space-y-2">
-                  {CHORD_TYPES.map((type) => (
-                    <button
-                      key={type.symbol}
-                      onClick={() => handleBuilderChange({ type })}
-                      className={cn(
-                        "w-full h-12 px-3 text-base font-semibold rounded-lg border-2 transition-all duration-200",
-                        "flex items-center justify-center shadow-sm",
-                        builder.type.symbol === type.symbol
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
-                          : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
-                      )}
-                    >
-                      {type.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={handleCloseChordBuilder}
-                className="px-4 py-2 text-sm bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmChord}
-                className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-md"
-              >
-                {editingIndex !== null ? 'Update' : 'Add'} Chord
-              </button>
-            </div>
-          </div>
-        </>
-      )}
 
       {/* Help text and chord count */}
       <div className="flex items-center justify-between text-xs text-muted-foreground">
