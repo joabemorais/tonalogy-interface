@@ -11,6 +11,7 @@ import { AnalysisResults } from '@/components/analysis-results'
 import { VisualizationMode } from '@/components/visualization-mode'
 import { MultiThemeVisualizationDisplay } from '@/components/multi-theme-visualization-display'
 import { useAnalysisStore, useHistoryStore, useSettingsStore } from '@/stores'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { apiClient } from '@/lib/api-client'
 import { validateChords, downloadBlob, blobToBase64, normalizeChordsForAPI } from '@/lib/utils'
 import { ProgressionAnalysisRequest, ProgressionAnalysisResponse } from '@/types'
@@ -21,6 +22,7 @@ export function HarmonicAnalyzer() {
   const [isGeneratingVisualization, setIsGeneratingVisualization] = useState(false)
   const [isTonalitySectionOpen, setIsTonalitySectionOpen] = useState(false)
   
+  const isMobile = useIsMobile()
   const { language } = useSettingsStore()
   const { setLoading, setResult, setError, setVisualizationError, setVisualization, result, error, isLoading, visualizations } = useAnalysisStore()
   const { addToHistory } = useHistoryStore()
@@ -203,6 +205,11 @@ export function HarmonicAnalyzer() {
           {/* Chord Input */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Chord Progression</label>
+            {!isMobile && chords.length > 1 && (
+              <p className="text-xs text-muted-foreground">
+                Click to edit • Hover to remove
+              </p>
+            )}
             <VisualChordInput 
               chords={chords}
               onChange={setChords}

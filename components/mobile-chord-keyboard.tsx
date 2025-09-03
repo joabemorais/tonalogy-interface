@@ -10,6 +10,7 @@ function useLongPress(onLongPress: () => void, onClick: () => void, delay = 500)
   const isLongPressRef = useRef(false)
 
   const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault() // Previne seleção de texto
     isLongPressRef.current = false
     timeoutRef.current = setTimeout(() => {
       isLongPressRef.current = true
@@ -31,6 +32,10 @@ function useLongPress(onLongPress: () => void, onClick: () => void, delay = 500)
     isLongPressRef.current = false
   }
 
+  const handleContextMenu = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault() // Previne menu de contexto
+  }
+
   return {
     onTouchStart: handleStart,
     onTouchEnd: handleEnd,
@@ -38,6 +43,7 @@ function useLongPress(onLongPress: () => void, onClick: () => void, delay = 500)
     onMouseDown: handleStart,
     onMouseUp: handleEnd,
     onMouseLeave: handleCancel,
+    onContextMenu: handleContextMenu,
   }
 }
 
@@ -98,7 +104,7 @@ function ChordButton({
         onClick={() => onChordPress(index)}
         disabled={disabled}
         className={cn(
-          "h-14 w-20 text-base font-semibold border-2 rounded-xl bg-background",
+          "h-14 w-20 text-base font-semibold border-2 rounded-xl bg-background select-none",
           "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
           "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
           "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -118,7 +124,7 @@ function ChordButton({
             onRemove(index)
           }}
           disabled={disabled}
-          className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center shadow-lg z-10 transition-all duration-200 animate-in zoom-in"
+          className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center shadow-lg z-10 transition-all duration-200 animate-in zoom-in border-[3px] border-red-800 hover:border-red-900"
         >
           <X className="h-4 w-4" />
         </button>
@@ -251,17 +257,31 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
 
   return (
     <>
+      {/* Backdrop para cancelar modo de remoção */}
+      {showRemoveButtons && (
+        <div 
+          className="fixed inset-0 z-30"
+          onClick={() => setShowRemoveButtons(false)}
+        />
+      )}
+      
       {/* Chord Display Area */}
-      <div className="space-y-3">
-        {/* Mode indicator */}
-        {showRemoveButtons && chords.length > 1 && (
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-destructive/10 text-destructive text-sm rounded-full">
+      <div className="space-y-3 relative z-40">
+        {/* Mode indicator - sempre reserva espaço */}
+        <div className="text-center mb-2 h-8 flex items-center justify-center">
+          {showRemoveButtons && chords.length > 1 ? (
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-destructive/10 text-destructive text-sm rounded-full select-none">
               <X className="h-4 w-4" />
               <span>Tap to remove chords</span>
             </div>
-          </div>
-        )}
+          ) : (
+            chords.length > 1 && (
+              <p className="text-xs text-muted-foreground select-none">
+                Tap to edit • Long press to remove
+              </p>
+            )
+          )}
+        </div>
         
         {/* Current Chords */}
         <div className="flex flex-wrap gap-3 justify-center">
@@ -296,21 +316,13 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
           )}
         </div>
         
-        {/* Help text */}
-        {!showRemoveButtons && chords.length > 1 && (
-          <div className="text-center">
-            <p className="text-xs text-muted-foreground">
-              Tap to edit • Long press to remove
-            </p>
-          </div>
-        )}
-        
         {/* Exit remove mode button */}
         {showRemoveButtons && (
           <div className="text-center">
             <button
               onClick={() => setShowRemoveButtons(false)}
-              className="px-4 py-2 text-sm bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
+              className="px-4 py-2 text-sm bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors select-none"
+              onContextMenu={(e) => e.preventDefault()}
             >
               Done
             </button>

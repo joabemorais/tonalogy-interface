@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, Music2, Hash, Palette } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { MobileChordKeyboard } from '@/components/mobile-chord-keyboard'
@@ -200,7 +200,7 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                 }}
                 disabled={disabled}
                 className={cn(
-                  "absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center z-10 shadow-lg transition-all duration-200",
+                  "absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center z-10 shadow-lg transition-all duration-200 border-[3px] border-red-800 hover:border-red-900",
                   "opacity-0 group-hover:opacity-100",
                   "disabled:opacity-0"
                 )}
@@ -219,9 +219,9 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                 />
                 
                 {/* Painel posicionado abaixo do botão de edição */}
-                <div className="absolute left-1/2 top-full -translate-x-1/2 mt-2 p-3 bg-background border rounded-lg shadow-xl z-50 w-[320px] max-h-[380px] overflow-y-auto animate-in fade-in zoom-in duration-200">
+                <div className="absolute left-1/2 top-full -translate-x-1/2 mt-2 p-2.5 bg-background border rounded-lg shadow-xl z-50 w-[320px] max-h-[380px] overflow-y-auto animate-in fade-in zoom-in duration-200">
                   {/* Header with preview */}
-                  <div className="flex items-center justify-between mb-3 pb-2 border-b">
+                  <div className="flex items-center justify-between mb-2 pb-2 border-b">
                     <span className="text-xs text-muted-foreground font-medium">
                       Edit Chord
                     </span>
@@ -231,10 +231,12 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                   </div>
 
                   {/* Grid layout */}
-                  <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="grid grid-cols-3 gap-2.5 mb-2">
                     {/* Note selector */}
-                    <div className="space-y-3">
-                      <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center text-muted-foreground">
+                        <Music2 className="h-4 w-4" />
+                      </div>
                       <div className="grid grid-cols-2 gap-2">
                         {NOTES.map((note) => (
                           <button
@@ -255,7 +257,7 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                     </div>
 
                     {/* Accidental selector */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <label className="text-sm font-semibold text-muted-foreground text-center block">Accidental</label>
                       <div className="space-y-2">
                         {ACCIDENTALS.map((acc) => (
@@ -273,11 +275,20 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                             {acc === '♮' ? '♮' : acc}
                           </button>
                         ))}
+                        
+                        {/* Botão Cancel integrado na coluna Accidental */}
+                        <button
+                          onClick={handleCloseChordBuilder}
+                          className="w-full py-3 text-sm font-medium bg-destructive/10 text-destructive rounded-lg border border-destructive/20 hover:bg-destructive/20 hover:border-destructive/40 transition-all duration-200 flex items-center justify-center gap-2 mt-4"
+                        >
+                          <X className="h-4 w-4" />
+                          Cancel
+                        </button>
                       </div>
                     </div>
 
                     {/* Chord type selector */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <label className="text-sm font-semibold text-muted-foreground text-center block">Type</label>
                       <div className="space-y-2">
                         {CHORD_TYPES.map((type) => (
@@ -295,24 +306,17 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                             {type.label}
                           </button>
                         ))}
+                        
+                        {/* Botão Update integrado na coluna Type */}
+                        <button
+                          onClick={handleConfirmChord}
+                          className="w-full py-3 text-sm font-medium bg-primary/90 text-primary-foreground rounded-lg border border-primary hover:bg-primary hover:border-primary/80 transition-all duration-200 flex items-center justify-center gap-2 mt-4 shadow-md"
+                        >
+                          <Music2 className="h-4 w-4" />
+                          Update
+                        </button>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Action buttons */}
-                  <div className="flex gap-2 justify-end">
-                    <button
-                      onClick={handleCloseChordBuilder}
-                      className="px-3 py-1.5 text-xs bg-muted text-muted-foreground rounded-md hover:bg-muted/80 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleConfirmChord}
-                      className="px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-md"
-                    >
-                      Update Chord
-                    </button>
                   </div>
                 </div>
               </>
@@ -355,9 +359,9 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                 />
                 
                 {/* Panel posicionado abaixo do botão de adicionar */}
-                <div className="absolute left-1/2 top-full -translate-x-1/2 mt-2 p-3 bg-background border rounded-lg shadow-xl z-50 w-[320px] max-h-[380px] overflow-y-auto animate-in fade-in zoom-in duration-200">
+                <div className="absolute left-1/2 top-full -translate-x-1/2 mt-2 p-2.5 bg-background border rounded-lg shadow-xl z-50 w-[320px] max-h-[380px] overflow-y-auto animate-in fade-in zoom-in duration-200">
                   {/* Header with preview */}
-                  <div className="flex items-center justify-between mb-3 pb-2 border-b">
+                  <div className="flex items-center justify-between mb-2 pb-2 border-b">
                     <span className="text-xs text-muted-foreground font-medium">
                       Add Chord
                     </span>
@@ -367,10 +371,12 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                   </div>
 
                   {/* Grid layout */}
-                  <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="grid grid-cols-3 gap-2.5 mb-2">
                     {/* Note selector */}
-                    <div className="space-y-3">
-                      <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center text-muted-foreground">
+                        <Music2 className="h-4 w-4" />
+                      </div>
                       <div className="grid grid-cols-2 gap-2">
                         {NOTES.map((note) => (
                           <button
@@ -391,7 +397,7 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                     </div>
 
                     {/* Accidental selector */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <label className="text-sm font-semibold text-muted-foreground text-center block">Accidental</label>
                       <div className="space-y-2">
                         {ACCIDENTALS.map((acc) => (
@@ -409,11 +415,20 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                             {acc === '♮' ? '♮' : acc}
                           </button>
                         ))}
+                        
+                        {/* Botão Cancel integrado na coluna Accidental */}
+                        <button
+                          onClick={handleCloseChordBuilder}
+                          className="w-full py-3 text-sm font-medium bg-destructive/10 text-destructive rounded-lg border border-destructive/20 hover:bg-destructive/20 hover:border-destructive/40 transition-all duration-200 flex items-center justify-center gap-2 mt-4"
+                        >
+                          <X className="h-4 w-4" />
+                          Cancel
+                        </button>
                       </div>
                     </div>
 
                     {/* Chord type selector */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <label className="text-sm font-semibold text-muted-foreground text-center block">Type</label>
                       <div className="space-y-2">
                         {CHORD_TYPES.map((type) => (
@@ -431,24 +446,17 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                             {type.label}
                           </button>
                         ))}
+                        
+                        {/* Botão Add integrado na coluna Type */}
+                        <button
+                          onClick={handleConfirmChord}
+                          className="w-full py-3 text-sm font-medium bg-primary/90 text-primary-foreground rounded-lg border border-primary hover:bg-primary hover:border-primary/80 transition-all duration-200 flex items-center justify-center gap-2 mt-4 shadow-md"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Add
+                        </button>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Action buttons */}
-                  <div className="flex gap-2 justify-end">
-                    <button
-                      onClick={handleCloseChordBuilder}
-                      className="px-3 py-1.5 text-xs bg-muted text-muted-foreground rounded-md hover:bg-muted/80 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleConfirmChord}
-                      className="px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors shadow-md"
-                    >
-                      Add Chord
-                    </button>
                   </div>
                 </div>
               </>
@@ -457,9 +465,8 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
         )}
       </div>
 
-      {/* Help text and chord count */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>Click to edit • Hover to remove</span>
+      {/* Chord count */}
+      <div className="flex items-center justify-end text-xs text-muted-foreground">
         <span className="font-medium">
           {chords.length} / {maxChords} chords
         </span>
