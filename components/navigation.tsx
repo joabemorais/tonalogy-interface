@@ -2,9 +2,10 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Music, Settings, History, Moon, Sun } from 'lucide-react'
+import { Settings, History, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
+import { TonalogyIcon } from '@/components/ui/tonalogy-icon'
 
 export function Navigation() {
   const { theme, setTheme } = useTheme()
@@ -15,7 +16,7 @@ export function Navigation() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Music className="h-6 w-6 text-primary" />
+            <TonalogyIcon size={50} className="text-primary" />
             <span className="text-xl">Tonalogy</span>
           </Link>
 

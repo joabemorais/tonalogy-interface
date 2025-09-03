@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   description: 'Web-based client for harmonic progression analysis',
   keywords: ['music theory', 'harmonic analysis', 'tonality', 'kripke semantics'],
   authors: [{ name: 'Joabe Morais', url: 'https://github.com/joabemorais' }],
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({

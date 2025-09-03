@@ -1,14 +1,14 @@
 'use client'
 
 import React from 'react'
-import { Music } from 'lucide-react'
+import { TonalogyIcon } from '@/components/ui/tonalogy-icon'
 
 export function Header() {
   return (
     <div className="text-center space-y-4 py-8">
       <div className="flex justify-center">
         <div className="p-3 bg-primary/10 rounded-full">
-          <Music className="h-8 w-8 text-primary" />
+          <TonalogyIcon size={32} className="text-primary" />
         </div>
       </div>
       
