@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Music, Play, Download, RefreshCw, Eye, ChevronDown, ChevronUp } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { Music, Play, Download, RefreshCw, Eye, ChevronDown, ChevronUp, Clock } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { VisualChordInput } from '@/components/visual-chord-input'
@@ -17,14 +18,15 @@ import { validateChords, downloadBlob, blobToBase64, normalizeChordsForAPI } fro
 import { ProgressionAnalysisRequest, ProgressionAnalysisResponse } from '@/types'
 
 export function HarmonicAnalyzer() {
-  const [chords, setChords] = useState<string[]>(['Am', 'F', 'G', 'C'])
   const [tonalities, setTonalities] = useState<string[]>([])
+  const pathname = usePathname()
+  const isOnHistoryPage = pathname === '/history'
   const [isGeneratingVisualization, setIsGeneratingVisualization] = useState(false)
   const [isTonalitySectionOpen, setIsTonalitySectionOpen] = useState(false)
   
   const isMobile = useIsMobile()
   const { language } = useSettingsStore()
-  const { setLoading, setResult, setError, setVisualizationError, setVisualization, result, error, isLoading, visualizations } = useAnalysisStore()
+  const { setLoading, setResult, setError, setVisualizationError, setVisualization, setChords, result, error, isLoading, visualizations, chords } = useAnalysisStore()
   const { addToHistory } = useHistoryStore()
 
   // Analysis mutation
@@ -204,7 +206,24 @@ export function HarmonicAnalyzer() {
         <CardContent className="space-y-6">
           {/* Chord Input */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Chord Progression</label>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">Chord Progression</label>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  // Toggle sidebar to show history
+                  const event = new CustomEvent('toggleSidebar')
+                  window.dispatchEvent(event)
+                }}
+                disabled={isOnHistoryPage}
+                className="text-xs gap-1.5 h-7 px-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={isOnHistoryPage ? "Already on history page" : "View analysis history"}
+              >
+                <Clock className="h-3.5 w-3.5" />
+                History
+              </Button>
+            </div>
             {!isMobile && chords.length > 1 && (
               <p className="text-xs text-muted-foreground">
                 Click to edit • Hover to remove

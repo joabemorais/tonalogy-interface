@@ -1,29 +1,66 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { HarmonicAnalyzer } from '@/components/harmonic-analyzer'
 import { RecentAnalyses } from '@/components/recent-analyses'
+import { SidebarProvider, RightSidebar } from '@/components/collapsible-sidebar'
 
 export default function HomePage() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    // Função para sincronizar estado da sidebar
+    const syncSidebarState = () => {
+      const sidebar = document.querySelector('[data-sidebar="true"]')
+      if (sidebar) {
+        const isVisible = !sidebar.classList.contains('translate-x-full')
+        setIsSidebarOpen(isVisible)
+      }
+    }
+
+    // Observa mudanças na sidebar
+    const observer = new MutationObserver(syncSidebarState)
+    
+    syncSidebarState()
+    
+    const sidebar = document.querySelector('[data-sidebar="true"]')
+    if (sidebar) {
+      observer.observe(sidebar, { 
+        attributes: true, 
+        attributeFilter: ['class'] 
+      })
+    }
+
+    const handleSidebarChange = () => {
+      setTimeout(syncSidebarState, 50)
+    }
+    
+    window.addEventListener('toggleSidebar', handleSidebarChange)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('toggleSidebar', handleSidebarChange)
+    }
+  }, [])
+
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      {/* <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-foreground">
-          Tonalogy Interface
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Análise harmônica avançada de progressões musicais usando lógica modal e semântica de Kripke
-        </p>
-      </div> */}
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
+    <SidebarProvider defaultOpen={false}>
+      {/* Container principal com margem direita dinâmica apenas no desktop */}
+      <div 
+        className={`min-h-screen transition-all duration-300 ${
+          isSidebarOpen ? 'md:mr-96' : 'mr-0'
+        }`}
+      >
+        {/* Conteúdo centralizado com largura limitada */}
+        <div className="max-w-4xl mx-auto px-6 py-8">
           <HarmonicAnalyzer />
         </div>
-        <div className="lg:col-span-1">
+        
+        {/* Right Sidebar - fixa na lateral direita */}
+        <RightSidebar>
           <RecentAnalyses />
-        </div>
+        </RightSidebar>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }

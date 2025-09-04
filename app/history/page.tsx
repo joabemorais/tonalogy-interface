@@ -1,3 +1,5 @@
+'use client'
+
 import { History, Star, Clock, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -11,88 +13,93 @@ export default function HistoryPage() {
   const recentAnalyses = history.filter(analysis => !analysis.isFavorite)
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
-          <History className="h-8 w-8" />
-          Analysis History
-        </h1>
-        <p className="text-muted-foreground">
-          View and manage your harmonic progression analyses
-        </p>
-      </div>
+    <div className="min-h-screen">
+      {/* Conteúdo centralizado com largura limitada */}
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        <div className="space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
+              <History className="h-8 w-8" />
+              Analysis History
+            </h1>
+            <p className="text-muted-foreground">
+              View and manage your harmonic progression analyses
+            </p>
+          </div>
 
-      {/* Actions */}
-      {history.length > 0 && (
-        <div className="flex justify-end">
-          <Button
-            onClick={clearHistory}
-            variant="outline"
-            className="gap-2"
-          >
-            <Trash2 className="h-4 w-4" />
-            Clear History
-          </Button>
-        </div>
-      )}
-
-      {/* Favorites */}
-      {favoriteAnalyses.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-yellow-500" />
-              Favorite Analyses
-            </CardTitle>
-            <CardDescription>Your starred harmonic progressions</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {favoriteAnalyses.map((analysis) => (
-              <AnalysisItem
-                key={analysis.id}
-                analysis={analysis}
-                onRemove={removeFromHistory}
-                onToggleFavorite={toggleFavorite}
-              />
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Recent Analyses */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Recent Analyses
-          </CardTitle>
-          <CardDescription>
-            {recentAnalyses.length > 0 
-              ? `${recentAnalyses.length} recent analyses`
-              : 'No analyses yet'
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {recentAnalyses.length > 0 ? (
-            recentAnalyses.map((analysis) => (
-              <AnalysisItem
-                key={analysis.id}
-                analysis={analysis}
-                onRemove={removeFromHistory}
-                onToggleFavorite={toggleFavorite}
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No analyses in your history yet.</p>
-              <p className="text-sm">Start by analyzing a chord progression!</p>
+          {/* Actions */}
+          {history.length > 0 && (
+            <div className="flex justify-end">
+              <Button
+                onClick={clearHistory}
+                variant="outline"
+                className="gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                Clear History
+              </Button>
             </div>
           )}
-        </CardContent>
-      </Card>
+
+          {/* Favorites */}
+          {favoriteAnalyses.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="h-5 w-5 text-yellow-500" />
+                  Favorite Analyses
+                </CardTitle>
+                <CardDescription>Your starred harmonic progressions</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {favoriteAnalyses.map((analysis) => (
+                  <AnalysisItem
+                    key={analysis.id}
+                    analysis={analysis}
+                    onRemove={removeFromHistory}
+                    onToggleFavorite={toggleFavorite}
+                  />
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Recent Analyses */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                Recent Analyses
+              </CardTitle>
+              <CardDescription>
+                {recentAnalyses.length > 0 
+                  ? `${recentAnalyses.length} recent analyses`
+                  : 'No analyses yet'
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {recentAnalyses.length > 0 ? (
+                recentAnalyses.map((analysis) => (
+                  <AnalysisItem
+                    key={analysis.id}
+                    analysis={analysis}
+                    onRemove={removeFromHistory}
+                    onToggleFavorite={toggleFavorite}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No analyses in your history yet.</p>
+                  <p className="text-sm">Start by analyzing a chord progression!</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }
