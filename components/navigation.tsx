@@ -1,14 +1,57 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Music, Settings, History, Moon, Sun, PanelRight } from 'lucide-react'
+import { Music, Settings, History, Moon, Sun, PanelRight, PanelRightClose } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
-import { toggleSidebar } from '@/components/collapsible-sidebar'
 
 export function Navigation() {
   const { theme, setTheme } = useTheme()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    // Função para sincronizar estado da sidebar
+    const syncSidebarState = () => {
+      // Verifica se o elemento da sidebar existe e se está visível
+      const sidebar = document.querySelector('[data-sidebar="true"]')
+      if (sidebar) {
+        const isVisible = !sidebar.classList.contains('translate-x-full')
+        setIsSidebarOpen(isVisible)
+      }
+    }
+
+    // Observa mudanças na sidebar
+    const observer = new MutationObserver(syncSidebarState)
+    
+    // Sincroniza estado inicial
+    syncSidebarState()
+    
+    // Observa mudanças no DOM
+    const sidebar = document.querySelector('[data-sidebar="true"]')
+    if (sidebar) {
+      observer.observe(sidebar, { 
+        attributes: true, 
+        attributeFilter: ['class'] 
+      })
+    }
+
+    // Adiciona um listener para mudanças na sidebar
+    const handleSidebarChange = () => {
+      setTimeout(syncSidebarState, 50) // Pequeno delay para aguardar animação
+    }
+    
+    window.addEventListener('toggleSidebar', handleSidebarChange)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('toggleSidebar', handleSidebarChange)
+    }
+  }, [])
+
+  const handleToggle = () => {
+    window.dispatchEvent(new Event('toggleSidebar'))
+  }
 
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -48,10 +91,26 @@ export function Navigation() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleSidebar}
+              onClick={handleToggle}
               title="Toggle Recent Analyses"
+              className={`transition-all duration-200 ${isSidebarOpen ? "bg-accent" : ""}`}
             >
-              <PanelRight className="h-5 w-5" />
+              <div className="relative w-5 h-5">
+                <PanelRight 
+                  className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+                    isSidebarOpen 
+                      ? 'opacity-0 scale-75 rotate-12' 
+                      : 'opacity-100 scale-100 rotate-0'
+                  }`} 
+                />
+                <PanelRightClose 
+                  className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+                    isSidebarOpen 
+                      ? 'opacity-100 scale-100 rotate-0' 
+                      : 'opacity-0 scale-75 rotate-12'
+                  }`} 
+                />
+              </div>
               <span className="sr-only">Toggle Recent Analyses</span>
             </Button>
 
