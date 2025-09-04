@@ -377,9 +377,7 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                   <div className="grid grid-cols-3 gap-2.5 mb-2">
                     {/* Note selector */}
                     <div className="space-y-2">
-                      <div className="flex items-center justify-center text-muted-foreground">
-                        <Music2 className="h-4 w-4" />
-                      </div>
+                      <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
                       <div className="grid grid-cols-2 gap-2">
                         {NOTES.map((note) => (
                           <button
