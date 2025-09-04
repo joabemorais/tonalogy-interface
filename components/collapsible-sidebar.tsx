@@ -72,7 +72,10 @@ export function RightSidebar({ children }: RightSidebarProps) {
       {isMobile && isOpen && (
         <div 
           className="fixed top-[calc(4rem+1px)] inset-x-0 bottom-0 bg-black/50 z-30 md:hidden"
-          onClick={toggle}
+          onClick={() => {
+            // Dispara evento global para sincronizar com todos os listeners
+            window.dispatchEvent(new Event('toggleSidebar'))
+          }}
         />
       )}
 
