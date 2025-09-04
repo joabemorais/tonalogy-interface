@@ -163,7 +163,7 @@ function MobileNoteButton({ note, isSelected, onClick }: {
   return (
     <button
       onClick={onClick}
-      style={noteTonalityStyle}
+      style={noteTonalityStyle as React.CSSProperties}
       className={cn(
         "h-12 w-full text-lg font-semibold rounded-lg border-2 transition-all duration-200",
         "flex items-center justify-center shadow-sm",
