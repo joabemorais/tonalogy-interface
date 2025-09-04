@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Plus, X, Music2, Hash, Palette } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { useChordTonalityStyling } from '@/hooks/use-chord-tonality-styling'
 import { MobileChordKeyboard } from '@/components/mobile-chord-keyboard'
 
 interface VisualChordInputProps {
@@ -60,6 +61,59 @@ function parseChordSymbol(chord: string): ChordBuilder | null {
   return { note, accidental, type }
 }
 
+// Individual chord button component with tonality styling
+function ChordButton({ chord, index, isEditing, onClick, onRemove, disabled }: {
+  chord: string
+  index: number
+  isEditing: boolean
+  onClick: () => void
+  onRemove: () => void
+  disabled: boolean
+}) {
+  const tonalityStyle = useChordTonalityStyling(chord)
+  
+  return (
+    <div className="relative group">
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        style={tonalityStyle}
+        className={cn(
+          "w-20 h-14 px-3 py-2 text-base font-semibold border-2 rounded-xl bg-background",
+          "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
+          "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
+          "disabled:opacity-50 disabled:cursor-not-allowed",
+          "flex items-center justify-center shadow-sm hover:shadow-md",
+          "border-border hover:border-primary/50",
+          "active:scale-95", // Uniform press feedback like mobile
+          isEditing && "border-primary shadow-md bg-primary/5"
+        )}
+      >
+        <span className="select-none">{chord}</span>
+      </button>
+      
+      {/* Remove button on hover */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+          onRemove()
+        }}
+        disabled={disabled}
+        className={cn(
+          "absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center z-50 shadow-lg transition-all duration-200 border-[3px] border-red-800 hover:border-red-900",
+          // Always visible when editing this chord, otherwise show on hover
+          isEditing
+            ? "opacity-100" 
+            : "opacity-0 group-hover:opacity-100",
+          "disabled:opacity-0"
+        )}
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+  )
+}
+
 export function VisualChordInput({ chords, onChange, disabled = false, maxChords = 12 }: VisualChordInputProps) {
   const isMobile = useIsMobile()
   
@@ -76,7 +130,8 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen) {
-        handleCloseChordBuilder()
+        setIsOpen(false)
+        setEditingIndex(null)
       }
     }
 
@@ -174,44 +229,15 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
       {/* Main chord grid - only show non-empty chords */}
       <div className="flex flex-wrap gap-3 justify-center">
         {chords.map((chord, index) => (
-          <div key={index} className="relative group">
-            <button
+          <div key={index} className="relative">
+            <ChordButton
+              chord={chord}
+              index={index}
+              isEditing={isOpen && editingIndex === index}
               onClick={() => handleOpenChordBuilder(index)}
+              onRemove={() => handleRemoveChord(index)}
               disabled={disabled}
-              className={cn(
-                "w-20 h-14 px-3 py-2 text-base font-semibold border-2 rounded-xl bg-background",
-                "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
-                "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                "flex items-center justify-center shadow-sm hover:shadow-md",
-                "border-border hover:border-primary/50",
-                "active:scale-95", // Uniform press feedback like mobile
-                isOpen && editingIndex === index && "border-primary shadow-md bg-primary/5"
-              )}
-            >
-              <span className="select-none">{chord}</span>
-            </button>
-            
-            {/* Remove button on hover */}
-            {chords.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleRemoveChord(index)
-                }}
-                disabled={disabled}
-                className={cn(
-                  "absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center z-50 shadow-lg transition-all duration-200 border-[3px] border-red-800 hover:border-red-900",
-                  // Always visible when editing this chord, otherwise show on hover
-                  isOpen && editingIndex === index 
-                    ? "opacity-100" 
-                    : "opacity-0 group-hover:opacity-100",
-                  "disabled:opacity-0"
-                )}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
+            />
 
             {/* Chord builder panel for editing - positioned next to the chord being edited */}
             {isOpen && editingIndex === index && !disabled && (

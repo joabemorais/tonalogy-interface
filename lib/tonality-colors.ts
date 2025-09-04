@@ -204,3 +204,54 @@ export function getTonalityTailwindVars(
     '--tonality-label': colors.label
   }
 }
+
+/**
+ * Determine the tonality of a chord based on its notation
+ */
+export function getChordTonality(chordSymbol: string): string | null {
+  if (!chordSymbol || !chordSymbol.trim()) return null
+  
+  // Normalize the chord symbol
+  let normalized = chordSymbol.trim()
+  
+  // Extract the root note (first character)
+  const rootNote = normalized.charAt(0).toUpperCase()
+  if (!['A', 'B', 'C', 'D', 'E', 'F', 'G'].includes(rootNote)) {
+    return null
+  }
+  
+  // Check for accidentals (sharp/flat)
+  let accidental = ''
+  let chordType = ''
+  
+  if (normalized.length > 1) {
+    const second = normalized.charAt(1)
+    if (second === '#' || second === '♯') {
+      accidental = '#'
+      chordType = normalized.slice(2)
+    } else if (second === 'b' || second === '♭') {
+      accidental = 'b'
+      chordType = normalized.slice(2)
+    } else {
+      chordType = normalized.slice(1)
+    }
+  }
+  
+  // Determine if it's minor
+  const isMinor = chordType === 'm' || chordType === 'min' || chordType === 'minor' || 
+                  chordType.startsWith('m') && !chordType.startsWith('maj')
+  
+  // Convert accidental to proper symbol for tonality lookup
+  let tonalityAccidental = accidental
+  if (accidental === '#') {
+    tonalityAccidental = '#'
+  } else if (accidental === 'b') {
+    tonalityAccidental = 'b'
+  }
+  
+  // Build tonality string
+  const tonalityRoot = rootNote + tonalityAccidental
+  const tonalityName = isMinor ? `${tonalityRoot} minor` : `${tonalityRoot} Major`
+  
+  return tonalityName
+}

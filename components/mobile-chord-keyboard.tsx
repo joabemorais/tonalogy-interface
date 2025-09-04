@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { X, Plus, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useChordTonalityStyling } from '@/hooks/use-chord-tonality-styling'
 
 // Hook for long press detection - only handles long press, doesn't interfere with onClick
 function useLongPress(onLongPress: () => void, onClick: () => void, delay = 500) {
@@ -99,12 +100,15 @@ function ChordButton({
     () => onChordPress(index)
   )
   
+  const tonalityStyle = useChordTonalityStyling(chord)
+  
   return (
     <div key={index} className="relative">
       <button
         {...longPressProps}
         onClick={() => onChordPress(index)}
         disabled={disabled}
+        style={tonalityStyle}
         className={cn(
           "h-14 w-20 text-base font-semibold border-2 rounded-xl bg-background select-none",
           "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
