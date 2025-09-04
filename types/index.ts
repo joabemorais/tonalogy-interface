@@ -29,6 +29,7 @@ export interface AnalysisState {
   isLoading: boolean
   result: ProgressionAnalysisResponse | null
   error: string | null
+  chords: string[]
   visualizations: {
     light?: string // Base64 image or URL
     dark?: string // Base64 image or URL

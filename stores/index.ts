@@ -39,6 +39,7 @@ interface AnalysisStore extends AnalysisState {
   setVisualization: (theme: 'light' | 'dark', visualization: string | null) => void
   setDiagramTheme: (theme: 'light' | 'dark') => void
   setFollowSystemTheme: (follow: boolean) => void
+  setChords: (chords: string[]) => void
   clearAnalysis: () => void
 }
 
@@ -72,6 +73,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   isLoading: false,
   result: null,
   error: null,
+  chords: ['Am', 'F', 'G', 'C'], // Default chords
   visualizations: {},
   diagramTheme: 'light',
   followSystemTheme: true,
@@ -88,12 +90,13 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   })),
   setDiagramTheme: (diagramTheme) => set({ diagramTheme, followSystemTheme: false }),
   setFollowSystemTheme: (followSystemTheme) => set({ followSystemTheme }),
+  setChords: (chords) => set({ chords }),
   clearAnalysis: () => set({
     isLoading: false,
     result: null,
     error: null,
     visualizations: {}
-    // Preserve diagram theme settings
+    // Preserve diagram theme settings and chords
   })
 }))
 
