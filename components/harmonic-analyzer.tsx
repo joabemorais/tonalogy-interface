@@ -193,50 +193,65 @@ export function HarmonicAnalyzer() {
   const showGenerationSection = result?.is_tonal_progression && !hasBothVisualizations
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
+          <Music className="h-8 w-8" />
+          Harmonic Analysis
+        </h1>
+        <p className="text-muted-foreground">
+          Enter a chord progression to analyze its tonal characteristics using Kripke semantics
+        </p>
+      </div>
+
       {/* Input Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Music className="h-5 w-5" />
-            Harmonic Analysis
-          </CardTitle>
-          <CardDescription>
-            Enter a chord progression to analyze its tonal characteristics using Kripke semantics
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Music className="h-5 w-5" />
+                Chord Progression
+              </CardTitle>
+              <CardDescription>
+                Build your progression and configure analysis settings
+              </CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                // Toggle sidebar to show history
+                const event = new CustomEvent('toggleSidebar')
+                window.dispatchEvent(event)
+              }}
+              disabled={shouldDisableHistoryButton}
+              className="text-xs gap-1.5 h-8 px-3 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title={
+                isOnHistoryPage 
+                  ? "Already on history page" 
+                  : isOnSettingsPage 
+                  ? "Already on settings page"
+                  : "View analysis history"
+              }
+            >
+              <Clock className="h-4 w-4" />
+              History
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Chord Input */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Chord Progression</label>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  // Toggle sidebar to show history
-                  const event = new CustomEvent('toggleSidebar')
-                  window.dispatchEvent(event)
-                }}
-                disabled={shouldDisableHistoryButton}
-                className="text-xs gap-1.5 h-7 px-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title={
-                  isOnHistoryPage 
-                    ? "Already on history page" 
-                    : isOnSettingsPage 
-                    ? "Already on settings page"
-                    : "View analysis history"
-                }
-              >
-                <Clock className="h-3.5 w-3.5" />
-                History
-              </Button>
+              <h3 className="text-sm font-medium">Chords</h3>
+              {!isMobile && chords.length > 1 && (
+                <p className="text-xs text-muted-foreground">
+                  Click to edit • Hover to remove
+                </p>
+              )}
             </div>
-            {!isMobile && chords.length > 1 && (
-              <p className="text-xs text-muted-foreground">
-                Click to edit • Hover to remove
-              </p>
-            )}
             <VisualChordInput 
               chords={chords}
               onChange={setChords}
@@ -245,25 +260,27 @@ export function HarmonicAnalyzer() {
           </div>
 
           {/* Tonality Selection - Accordion */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <button
               onClick={() => setIsTonalitySectionOpen(!isTonalitySectionOpen)}
-              className="w-full flex items-center justify-between text-sm font-medium hover:text-primary transition-colors focus:outline-none focus:text-primary"
+              className="w-full flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 {isTonalitySectionOpen ? (
-                  <ChevronUp className="h-5 w-5 transition-transform" />
+                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 transition-transform" />
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 )}
-                <span>Tonalities to Test</span>
-                <span className="text-xs text-muted-foreground font-normal">(Optional)</span>
-                {tonalities.length > 0 && (
-                  <span className="px-2 py-0.5 text-xs bg-primary/10 text-primary rounded-full">
-                    {tonalities.length} selected
-                  </span>
-                )}
+                <div className="text-left">
+                  <h3 className="text-sm font-medium">Tonalities to Test</h3>
+                  <p className="text-xs text-muted-foreground">Optional - Restrict analysis to specific keys</p>
+                </div>
               </div>
+              {tonalities.length > 0 && (
+                <span className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded-full font-medium">
+                  {tonalities.length} selected
+                </span>
+              )}
             </button>
             
             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
@@ -271,7 +288,7 @@ export function HarmonicAnalyzer() {
                 ? 'max-h-[600px] opacity-100' 
                 : 'max-h-0 opacity-0'
             }`}>
-              <div className="pt-2">
+              <div className="p-3 border rounded-lg bg-background">
                 <TonalitySelector
                   selected={tonalities}
                   onChange={setTonalities}
@@ -282,37 +299,44 @@ export function HarmonicAnalyzer() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
             <Button 
               onClick={handleAnalyze}
               disabled={isLoading || chords.length === 0}
-              className="flex-1"
+              className="flex-1 h-10"
+              size="lg"
             >
               {isLoading ? (
                 <RefreshCw className="h-4 w-4 animate-spin mr-2" />
               ) : (
                 <Play className="h-4 w-4 mr-2" />
               )}
-              Analyze
+              Analyze Progression
             </Button>
 
-            {hasAnyVisualization && (
+            <div className="flex gap-2">
+              {hasAnyVisualization && (
+                <Button
+                  onClick={handleDownload}
+                  variant="outline"
+                  className="h-10 px-4"
+                  title="Download visualization"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              )}
+
               <Button
-                onClick={handleDownload}
-                variant="outline"
-                size="icon"
+                onClick={handleReset}
+                variant="ghost"
+                className="h-10 px-4"
+                title="Reset to default"
               >
-                <Download className="h-4 w-4" />
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset
               </Button>
-            )}
-
-            <Button
-              onClick={handleReset}
-              variant="ghost"
-              size="icon"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -329,15 +353,29 @@ export function HarmonicAnalyzer() {
       {showGenerationSection && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Eye className="h-5 w-5" />
-              Generate Diagram
+              Visual Diagram Generation
             </CardTitle>
             <CardDescription>
-              Create visual diagrams showing tonal paths and modulations
+              Your progression is tonal! Generate visual diagrams showing harmonic paths and modulations
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                <div>
+                  <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                    Tonal Progression Detected
+                  </p>
+                  <p className="text-xs text-green-600 dark:text-green-300 mt-1">
+                    This progression follows tonal principles and can be visualized as a harmonic graph
+                  </p>
+                </div>
+              </div>
+            </div>
+            
             <VisualizationMode
               onGenerateBoth={handleGenerateBoth}
               onGenerateLight={handleGenerateLight}
