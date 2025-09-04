@@ -21,6 +21,8 @@ export function HarmonicAnalyzer() {
   const [tonalities, setTonalities] = useState<string[]>([])
   const pathname = usePathname()
   const isOnHistoryPage = pathname === '/history'
+  const isOnSettingsPage = pathname === '/settings'
+  const shouldDisableHistoryButton = isOnHistoryPage || isOnSettingsPage
   const [isGeneratingVisualization, setIsGeneratingVisualization] = useState(false)
   const [isTonalitySectionOpen, setIsTonalitySectionOpen] = useState(false)
   
@@ -216,9 +218,15 @@ export function HarmonicAnalyzer() {
                   const event = new CustomEvent('toggleSidebar')
                   window.dispatchEvent(event)
                 }}
-                disabled={isOnHistoryPage}
+                disabled={shouldDisableHistoryButton}
                 className="text-xs gap-1.5 h-7 px-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title={isOnHistoryPage ? "Already on history page" : "View analysis history"}
+                title={
+                  isOnHistoryPage 
+                    ? "Already on history page" 
+                    : isOnSettingsPage 
+                    ? "Already on settings page"
+                    : "View analysis history"
+                }
               >
                 <Clock className="h-3.5 w-3.5" />
                 History

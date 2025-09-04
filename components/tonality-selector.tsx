@@ -24,7 +24,7 @@ export function TonalitySelector({ selected, onChange, disabled = false }: Tonal
       <div className="text-xs text-muted-foreground">
         Select specific tonalities to test (leave empty for auto-detection)
       </div>
-      <div className="max-h-44 overflow-y-auto border rounded-xl p-3 bg-background/50 custom-scrollbar">
+      <div className="max-h-44 overflow-y-auto border rounded-xl p-3 bg-background/80 custom-scrollbar">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {COMMON_TONALITIES.map((tonality) => (
             <button
