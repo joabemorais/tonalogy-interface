@@ -2,7 +2,7 @@
 
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { getChordTonality, getTonalityColor, isMinorTonality } from '@/lib/tonality-colors'
+import { getChordTonality, getTonalityColor, shouldHaveDashedBorder } from '@/lib/tonality-colors'
 
 interface ChordTonalityStyle {
   borderBottomColor: string
@@ -63,8 +63,8 @@ export function useChordTonalityStyling(chord: string): ChordTonalityStyle {
   const fillColor = getTonalityColor(tonality, 'fill', effectiveTheme)
   const labelColor = getTonalityColor(tonality, 'label', effectiveTheme)
   
-  // Determine border style based on whether the chord is minor
-  const borderStyle = isMinorTonality(tonality) ? 'dashed' : 'solid'
+  // Determine border style based on whether the chord is minor or diminished
+  const borderStyle = shouldHaveDashedBorder(chord) ? 'dashed' : 'solid'
 
   return {
     borderBottomColor: strokeColor,

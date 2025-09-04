@@ -129,6 +129,10 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
     accidental: '♮',
     type: CHORD_TYPES[0]
   })
+  
+  // Get tonality styling for the chord preview (called at component level)
+  const previewChordSymbol = buildChordSymbol(builder)
+  const previewTonalityStyle = useChordTonalityStyling(previewChordSymbol)
 
   // Handle ESC key to close panel
   React.useEffect(() => {
@@ -259,8 +263,11 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                     <span className="text-xs text-muted-foreground font-medium">
                       Edit Chord
                     </span>
-                    <div className="text-xl font-bold px-3 py-1.5 bg-accent rounded-lg min-w-[70px] text-center shadow-sm">
-                      {buildChordSymbol(builder)}
+                    <div 
+                      className="text-xl font-bold px-3 py-1.5 bg-accent rounded-lg min-w-[70px] text-center shadow-sm"
+                      style={previewTonalityStyle}
+                    >
+                      {previewChordSymbol}
                     </div>
                   </div>
 
@@ -398,8 +405,11 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                     <span className="text-xs text-muted-foreground font-medium">
                       Add Chord
                     </span>
-                    <div className="text-xl font-bold px-3 py-1.5 bg-accent rounded-lg min-w-[70px] text-center shadow-sm">
-                      {buildChordSymbol(builder)}
+                    <div 
+                      className="text-xl font-bold px-3 py-1.5 bg-accent rounded-lg min-w-[70px] text-center shadow-sm"
+                      style={previewTonalityStyle}
+                    >
+                      {previewChordSymbol}
                     </div>
                   </div>
 

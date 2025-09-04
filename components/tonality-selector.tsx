@@ -67,6 +67,19 @@ export function TonalitySelector({ selected, onChange, disabled = false }: Tonal
             const labelColor = getColor(tonality, 'label')
             const borderStyle = isMinor(tonality) ? 'dashed' : 'solid'
             
+            // Helper function to convert hex to rgba
+            const hexToRgba = (hex: string, alpha: number) => {
+              const r = parseInt(hex.slice(1, 3), 16)
+              const g = parseInt(hex.slice(3, 5), 16)
+              const b = parseInt(hex.slice(5, 7), 16)
+              return `rgba(${r}, ${g}, ${b}, ${alpha})`
+            }
+            
+            // Initial state should be very subtle (lower opacity)
+            const initialBgColor = isSelected ? fillColor : hexToRgba(fillColor, 0.08)
+            // Hover state should be more visible (higher opacity)  
+            const hoverBgColor = hexToRgba(fillColor, 0.18)
+            
             return (
               <button
                 key={tonality}
@@ -74,30 +87,23 @@ export function TonalitySelector({ selected, onChange, disabled = false }: Tonal
                 disabled={disabled}
                 className={cn(
                   "relative px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200",
-                  "hover:scale-[1.02] active:scale-95 text-center group",
+                  "hover:scale-[1.02] active:scale-95 text-center group tonality-button",
                   "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
                   "focus:outline-none focus:ring-2 focus:ring-offset-2",
-                  isSelected ? "shadow-lg" : "shadow-sm hover:shadow-md"
+                  isSelected ? "shadow-lg tonality-selected" : "shadow-sm hover:shadow-md tonality-unselected"
                 )}
                 style={{
+                  '--stroke-color': strokeColor,
+                  '--fill-color': fillColor,
+                  '--label-color': labelColor,
+                  '--initial-bg': initialBgColor,
+                  '--hover-bg': hoverBgColor,
                   borderWidth: '2px',
                   borderStyle,
                   borderColor: strokeColor,
-                  backgroundColor: isSelected ? fillColor : `${fillColor}25`,
+                  backgroundColor: initialBgColor,
                   color: isSelected ? labelColor : strokeColor,
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSelected && !disabled) {
-                    e.currentTarget.style.backgroundColor = `${fillColor}40`
-                    e.currentTarget.style.color = labelColor
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelected && !disabled) {
-                    e.currentTarget.style.backgroundColor = `${fillColor}25`
-                    e.currentTarget.style.color = strokeColor
-                  }
-                }}
+                } as React.CSSProperties}
               >
                 {/* Tonality indicator dot */}
                 <div className="flex items-center justify-center gap-2">
@@ -129,9 +135,21 @@ export function TonalitySelector({ selected, onChange, disabled = false }: Tonal
                 key={tonality}
                 className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full"
                 style={{
-                  backgroundColor: `${getColor(tonality, 'fill')}25`,
+                  backgroundColor: (() => {
+                    const hex = getColor(tonality, 'fill')
+                    const r = parseInt(hex.slice(1, 3), 16)
+                    const g = parseInt(hex.slice(3, 5), 16)
+                    const b = parseInt(hex.slice(5, 7), 16)
+                    return `rgba(${r}, ${g}, ${b}, 0.15)`
+                  })(),
                   color: getColor(tonality, 'label'),
-                  border: `1px ${isMinor(tonality) ? 'dashed' : 'solid'} ${getColor(tonality, 'stroke')}50`
+                  border: `1px ${isMinor(tonality) ? 'dashed' : 'solid'} ${(() => {
+                    const hex = getColor(tonality, 'stroke')
+                    const r = parseInt(hex.slice(1, 3), 16)
+                    const g = parseInt(hex.slice(3, 5), 16)
+                    const b = parseInt(hex.slice(5, 7), 16)
+                    return `rgba(${r}, ${g}, ${b}, 0.3)`
+                  })()}`
                 }}
               >
                 <div 

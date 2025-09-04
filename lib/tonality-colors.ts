@@ -135,6 +135,31 @@ export function isMinorTonality(tonality: string | undefined | null): boolean {
 }
 
 /**
+ * Check if a chord is diminished (for dashed border styling)
+ */
+export function isDiminishedChord(chordSymbol: string | undefined | null): boolean {
+  if (!chordSymbol) return false
+  const lowerChord = chordSymbol.toLowerCase().trim()
+  return lowerChord.includes('dim') || lowerChord.includes('°')
+}
+
+/**
+ * Check if a chord should have dashed borders (minor tonality or diminished chord)
+ */
+export function shouldHaveDashedBorder(chordSymbol: string | undefined | null): boolean {
+  if (!chordSymbol) return false
+  
+  // Check if it's a diminished chord
+  if (isDiminishedChord(chordSymbol)) {
+    return true
+  }
+  
+  // Check if it's a minor tonality
+  const tonality = getChordTonality(chordSymbol)
+  return isMinorTonality(tonality)
+}
+
+/**
  * Get all available tonalities
  */
 export function getAllTonalities(theme: 'light' | 'dark' = 'light'): string[] {

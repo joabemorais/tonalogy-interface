@@ -210,6 +210,10 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
     accidental: '♮',
     type: CHORD_TYPES[0]
   })
+  
+  // Get tonality styling for the chord preview (called at component level)
+  const previewChordSymbol = buildChordSymbol(builder)
+  const previewTonalityStyle = useChordTonalityStyling(previewChordSymbol)
 
   // Hide remove buttons when only one chord remains
   useEffect(() => {
@@ -396,8 +400,11 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
                   {editingIndex !== null ? 'Edit Chord' : 'Add Chord'}
                 </span>
                 <div className="relative">
-                  <div className="text-2xl font-bold px-4 py-2 bg-accent rounded-xl text-center min-w-[80px] shadow-sm">
-                    {buildChordSymbol(builder)}
+                  <div 
+                    className="text-2xl font-bold px-4 py-2 bg-accent rounded-xl text-center min-w-[80px] shadow-sm"
+                    style={previewTonalityStyle}
+                  >
+                    {previewChordSymbol}
                   </div>
                   
                   {/* Remove button - only show when editing existing chord and there's more than one chord */}
