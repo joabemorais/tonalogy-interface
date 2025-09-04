@@ -61,9 +61,9 @@ export function TonalityBadge({
         }
       case 'subtle':
         return {
-          backgroundColor: `${fillColor}10`,
+          backgroundColor: `${fillColor}40`,
           color: labelColor,
-          borderColor: `${strokeColor}30`,
+          borderColor: `${strokeColor}60`,
           borderWidth: '1px',
           borderStyle
         }

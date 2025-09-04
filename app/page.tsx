@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react'
 import { HarmonicAnalyzer } from '@/components/harmonic-analyzer'
 import { RecentAnalyses } from '@/components/recent-analyses'
 import { SidebarProvider, RightSidebar } from '@/components/collapsible-sidebar'
-import { TonalityTest } from '@/components/tonality-test'
 
 export default function HomePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -53,13 +52,8 @@ export default function HomePage() {
         }`}
       >
         {/* Conteúdo centralizado com largura limitada */}
-        <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+        <div className="max-w-4xl mx-auto px-6 py-8">
           <HarmonicAnalyzer />
-          
-          {/* Teste temporário das cores das tonalidades */}
-          <div className="border-t pt-8">
-            <TonalityTest />
-          </div>
         </div>
         
         {/* Right Sidebar - fixa na lateral direita */}

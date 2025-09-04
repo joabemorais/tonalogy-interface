@@ -54,24 +54,18 @@ export function TonalitySelector({ selected, onChange, disabled = false }: Tonal
                   borderWidth: '2px',
                   borderStyle,
                   borderColor: strokeColor,
-                  backgroundColor: isSelected ? fillColor : 'transparent',
+                  backgroundColor: isSelected ? fillColor : `${fillColor}25`,
                   color: isSelected ? labelColor : strokeColor,
-                  ...(isSelected ? {} : {
-                    '--hover-bg': `${fillColor}20`,
-                    '--hover-border': strokeColor
-                  })
                 }}
                 onMouseEnter={(e) => {
                   if (!isSelected && !disabled) {
-                    e.currentTarget.style.backgroundColor = `${fillColor}15`
-                    e.currentTarget.style.borderColor = strokeColor
+                    e.currentTarget.style.backgroundColor = `${fillColor}40`
                     e.currentTarget.style.color = labelColor
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isSelected && !disabled) {
-                    e.currentTarget.style.backgroundColor = 'transparent'
-                    e.currentTarget.style.borderColor = strokeColor
+                    e.currentTarget.style.backgroundColor = `${fillColor}25`
                     e.currentTarget.style.color = strokeColor
                   }
                 }}
