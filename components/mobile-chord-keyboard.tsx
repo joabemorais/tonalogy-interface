@@ -3,6 +3,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { X, Plus, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useChordTonalityStyling } from '@/hooks/use-chord-tonality-styling'
+import { useNoteTonalityStyling } from '@/hooks/use-note-tonality-styling'
 
 // Hook for long press detection - only handles long press, doesn't interfere with onClick
 function useLongPress(onLongPress: () => void, onClick: () => void, delay = 500) {
@@ -99,21 +101,30 @@ function ChordButton({
     () => onChordPress(index)
   )
   
+  const tonalityStyle = useChordTonalityStyling(chord)
+  
   return (
     <div key={index} className="relative">
       <button
         {...longPressProps}
         onClick={() => onChordPress(index)}
         disabled={disabled}
+        style={tonalityStyle}
         className={cn(
           "h-14 w-20 text-base font-semibold border-2 rounded-xl bg-background select-none",
-          "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
+          "transition-all duration-200",
           "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
           "disabled:opacity-50 disabled:cursor-not-allowed",
-          "flex items-center justify-center shadow-sm hover:shadow-md",
-          "active:scale-95", // Visual feedback for press
+          "flex items-center justify-center shadow-sm",
+          "border-border",
+          "active:scale-95",
+          // Hover styles using CSS custom properties
+          "hover:shadow-md hover:[border-color:var(--chord-tonality-stroke)] hover:[border-style:var(--chord-tonality-border-style)]",
+          // Active/pressed styles
+          "active:[background-color:var(--chord-tonality-fill)] active:[border-color:var(--chord-tonality-stroke)] active:[border-style:var(--chord-tonality-border-style)] active:[color:var(--chord-tonality-label)]",
           showRemoveButtons && "border-destructive/50 bg-destructive/5",
-          isEditing && "border-primary shadow-md bg-primary/5" // Uniform editing state with desktop
+          // Selected/editing state using CSS custom properties
+          isEditing && "shadow-md [background-color:var(--chord-tonality-fill)] [border-color:var(--chord-tonality-stroke)] [border-style:var(--chord-tonality-border-style)] [color:var(--chord-tonality-label)]"
         )}
       >
         <span className="select-none">{chord}</span>
@@ -139,6 +150,32 @@ function ChordButton({
 function buildChordSymbol(builder: ChordBuilder): string {
   const accidentalSymbol = builder.accidental === '♮' ? '' : builder.accidental
   return `${builder.note}${accidentalSymbol}${builder.type.symbol}`
+}
+
+// Simple note button component with tonality styling for mobile
+function MobileNoteButton({ note, isSelected, onClick }: {
+  note: Note
+  isSelected: boolean
+  onClick: () => void
+}) {
+  const noteTonalityStyle = useNoteTonalityStyling(note)
+  
+  return (
+    <button
+      onClick={onClick}
+      style={noteTonalityStyle}
+      className={cn(
+        "h-12 w-full text-lg font-semibold rounded-lg border-2 transition-all duration-200",
+        "flex items-center justify-center shadow-sm",
+        // Base styling - match other buttons
+        isSelected
+          ? "[background-color:var(--note-tonality-fill)] [border-color:var(--note-tonality-stroke)] [color:var(--note-tonality-label)] shadow-md scale-105"
+          : "bg-background border-border hover:shadow-md"
+      )}
+    >
+      {note}
+    </button>
+  )
 }
 
 function parseChordSymbol(chord: string): ChordBuilder | null {
@@ -173,6 +210,10 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
     accidental: '♮',
     type: CHORD_TYPES[0]
   })
+  
+  // Get tonality styling for the chord preview (called at component level)
+  const previewChordSymbol = buildChordSymbol(builder)
+  const previewTonalityStyle = useChordTonalityStyling(previewChordSymbol)
 
   // Hide remove buttons when only one chord remains
   useEffect(() => {
@@ -359,8 +400,11 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
                   {editingIndex !== null ? 'Edit Chord' : 'Add Chord'}
                 </span>
                 <div className="relative">
-                  <div className="text-2xl font-bold px-4 py-2 bg-accent rounded-xl text-center min-w-[80px] shadow-sm">
-                    {buildChordSymbol(builder)}
+                  <div 
+                    className="text-2xl font-bold px-4 py-2 bg-accent rounded-xl text-center min-w-[80px] shadow-sm"
+                    style={previewTonalityStyle}
+                  >
+                    {previewChordSymbol}
                   </div>
                   
                   {/* Remove button - only show when editing existing chord and there's more than one chord */}
@@ -394,19 +438,12 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
                 <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
                 <div className="grid grid-cols-7 gap-2">
                   {NOTES.map((note) => (
-                    <button
+                    <MobileNoteButton
                       key={note}
+                      note={note}
+                      isSelected={builder.note === note}
                       onClick={() => handleBuilderChange({ note })}
-                      className={cn(
-                        "h-12 w-full text-lg font-semibold rounded-lg border-2 transition-all duration-200",
-                        "flex items-center justify-center shadow-sm",
-                        builder.note === note
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
-                          : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
-                      )}
-                    >
-                      {note}
-                    </button>
+                    />
                   ))}
                 </div>
               </div>

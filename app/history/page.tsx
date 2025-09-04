@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { useHistoryStore } from '@/stores'
 import { formatTimestamp } from '@/lib/utils'
+import { TonalityBadge } from '@/components/ui/tonality-badge'
 
 export default function HistoryPage() {
   const { history, removeFromHistory, toggleFavorite, clearHistory } = useHistoryStore()
@@ -121,9 +122,17 @@ function AnalysisItem({ analysis, onRemove, onToggleFavorite }: any) {
           </div>
         </div>
         
-        <div className="text-sm text-muted-foreground space-y-1">
+        <div className="text-sm text-muted-foreground space-y-2">
           {analysis.result.identified_tonality && (
-            <div>Tonality: {analysis.result.identified_tonality}</div>
+            <div className="flex items-center gap-2">
+              <span>Tonality:</span>
+              <TonalityBadge 
+                tonality={analysis.result.identified_tonality}
+                size="sm"
+                variant="outline"
+                showDot={true}
+              />
+            </div>
           )}
           <div>Analyzed: {formatTimestamp(analysis.timestamp)}</div>
         </div>
