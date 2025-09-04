@@ -8,6 +8,10 @@ interface ChordTonalityStyle {
   borderBottomColor: string
   borderBottomStyle: 'solid' | 'dashed'
   borderBottomWidth: string
+  '--chord-tonality-stroke': string
+  '--chord-tonality-fill': string
+  '--chord-tonality-label': string
+  '--chord-tonality-border-style': 'solid' | 'dashed'
 }
 
 /**
@@ -27,7 +31,11 @@ export function useChordTonalityStyling(chord: string): ChordTonalityStyle {
     return {
       borderBottomColor: 'transparent',
       borderBottomStyle: 'solid',
-      borderBottomWidth: '3px'
+      borderBottomWidth: '3px',
+      '--chord-tonality-stroke': 'transparent',
+      '--chord-tonality-fill': 'transparent',
+      '--chord-tonality-label': 'inherit',
+      '--chord-tonality-border-style': 'solid'
     }
   }
 
@@ -38,7 +46,11 @@ export function useChordTonalityStyling(chord: string): ChordTonalityStyle {
     return {
       borderBottomColor: 'transparent',
       borderBottomStyle: 'solid',
-      borderBottomWidth: '3px'
+      borderBottomWidth: '3px',
+      '--chord-tonality-stroke': 'transparent',
+      '--chord-tonality-fill': 'transparent',
+      '--chord-tonality-label': 'inherit',
+      '--chord-tonality-border-style': 'solid'
     }
   }
 
@@ -46,15 +58,21 @@ export function useChordTonalityStyling(chord: string): ChordTonalityStyle {
   const currentTheme = (resolvedTheme || theme) as 'light' | 'dark'
   const effectiveTheme: 'light' | 'dark' = currentTheme === 'dark' ? 'dark' : 'light'
 
-  // Get the stroke color for the tonality
-  const color = getTonalityColor(tonality, 'stroke', effectiveTheme)
+  // Get the colors for the tonality
+  const strokeColor = getTonalityColor(tonality, 'stroke', effectiveTheme)
+  const fillColor = getTonalityColor(tonality, 'fill', effectiveTheme)
+  const labelColor = getTonalityColor(tonality, 'label', effectiveTheme)
   
   // Determine border style based on whether the chord is minor
   const borderStyle = isMinorTonality(tonality) ? 'dashed' : 'solid'
 
   return {
-    borderBottomColor: color,
+    borderBottomColor: strokeColor,
     borderBottomStyle: borderStyle,
-    borderBottomWidth: '3px'
-  }
+    borderBottomWidth: '3px',
+    '--chord-tonality-stroke': strokeColor,
+    '--chord-tonality-fill': fillColor,
+    '--chord-tonality-label': labelColor,
+    '--chord-tonality-border-style': borderStyle
+  } as ChordTonalityStyle
 }

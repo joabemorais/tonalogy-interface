@@ -111,13 +111,19 @@ function ChordButton({
         style={tonalityStyle}
         className={cn(
           "h-14 w-20 text-base font-semibold border-2 rounded-xl bg-background select-none",
-          "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
+          "transition-all duration-200",
           "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
           "disabled:opacity-50 disabled:cursor-not-allowed",
-          "flex items-center justify-center shadow-sm hover:shadow-md",
-          "active:scale-95", // Visual feedback for press
+          "flex items-center justify-center shadow-sm",
+          "border-border",
+          "active:scale-95",
+          // Hover styles using CSS custom properties
+          "hover:shadow-md hover:[border-color:var(--chord-tonality-stroke)] hover:[border-style:var(--chord-tonality-border-style)]",
+          // Active/pressed styles
+          "active:[background-color:var(--chord-tonality-fill)] active:[border-color:var(--chord-tonality-stroke)] active:[border-style:var(--chord-tonality-border-style)] active:[color:var(--chord-tonality-label)]",
           showRemoveButtons && "border-destructive/50 bg-destructive/5",
-          isEditing && "border-primary shadow-md bg-primary/5" // Uniform editing state with desktop
+          // Selected/editing state using CSS custom properties
+          isEditing && "shadow-md [background-color:var(--chord-tonality-fill)] [border-color:var(--chord-tonality-stroke)] [border-style:var(--chord-tonality-border-style)] [color:var(--chord-tonality-label)]"
         )}
       >
         <span className="select-none">{chord}</span>
