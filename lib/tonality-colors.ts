@@ -15,6 +15,7 @@ export interface TonalityColorPalette {
 
 // Light Theme Tonality Colors
 export const LIGHT_TONALITY_COLORS: TonalityColorPalette = {
+  // Major tonalities
   'C Major': { stroke: '#4dabf7', fill: '#a5d8ff', label: '#1971c2' },
   'C# Major': { stroke: '#5BC3BA', fill: '#ACE5DD', label: '#248883' },
   'Db Major': { stroke: '#5BC3BA', fill: '#ACE5DD', label: '#248883' },
@@ -31,11 +32,30 @@ export const LIGHT_TONALITY_COLORS: TonalityColorPalette = {
   'A Major': { stroke: '#f783ac', fill: '#fcc2d7', label: '#c2255c' },
   'A# Major': { stroke: '#E97DCF', fill: '#F5C0E9', label: '#AF2E89' },
   'Bb Major': { stroke: '#E97DCF', fill: '#F5C0E9', label: '#AF2E89' },
-  'B Major': { stroke: '#da77f2', fill: '#eebefa', label: '#9c36b5' }
+  'B Major': { stroke: '#da77f2', fill: '#eebefa', label: '#9c36b5' },
+  
+  // Minor tonalities (relative minors - same colors as their parallel majors)
+  'A minor': { stroke: '#4dabf7', fill: '#a5d8ff', label: '#1971c2' }, // C Major parallel
+  'A# minor': { stroke: '#5BC3BA', fill: '#ACE5DD', label: '#248883' }, // C# Major parallel
+  'Bb minor': { stroke: '#5BC3BA', fill: '#ACE5DD', label: '#248883' }, // Db Major parallel
+  'B minor': { stroke: '#69db7c', fill: '#b2f2bb', label: '#2f9e44' }, // D Major parallel
+  'C minor': { stroke: '#B4D85C', fill: '#D9EFAA', label: '#909522' }, // Eb Major parallel
+  'C# minor': { stroke: '#ffd43b', fill: '#ffec99', label: '#f08c00' }, // E Major parallel
+  'Db minor': { stroke: '#ffd43b', fill: '#ffec99', label: '#f08c00' }, // E Major parallel
+  'D minor': { stroke: '#ffa94d', fill: '#ffd8a8', label: '#e8590c' }, // F Major parallel
+  'D# minor': { stroke: '#FF986A', fill: '#FFD1B9', label: '#E4451F' }, // F# Major parallel
+  'Eb minor': { stroke: '#FF986A', fill: '#FFD1B9', label: '#E4451F' }, // Gb Major parallel
+  'E minor': { stroke: '#ff8787', fill: '#ffc9c9', label: '#e03131' }, // G Major parallel
+  'F minor': { stroke: '#FB859A', fill: '#FEC6D0', label: '#D12B47' }, // Ab Major parallel
+  'F# minor': { stroke: '#f783ac', fill: '#fcc2d7', label: '#c2255c' }, // A Major parallel
+  'Gb minor': { stroke: '#f783ac', fill: '#fcc2d7', label: '#c2255c' }, // A Major parallel
+  'G minor': { stroke: '#E97DCF', fill: '#F5C0E9', label: '#AF2E89' }, // Bb Major parallel
+  'G# minor': { stroke: '#da77f2', fill: '#eebefa', label: '#9c36b5' }  // B Major parallel
 }
 
 // Dark Theme Tonality Colors  
 export const DARK_TONALITY_COLORS: TonalityColorPalette = {
+  // Major tonalities
   'C Major': { stroke: '#56a2e8', fill: '#154163', label: '#74b9ff' },
   'C# Major': { stroke: '#479d99', fill: '#0d3e37', label: '#6bccc7' },
   'Db Major': { stroke: '#479d99', fill: '#0d3e37', label: '#6bccc7' },
@@ -52,7 +72,25 @@ export const DARK_TONALITY_COLORS: TonalityColorPalette = {
   'A Major': { stroke: '#ff92ff', fill: '#e466f7', label: '#ffb3ff' },
   'A# Major': { stroke: '#db9cff', fill: '#3a2f56', label: '#e5b3ff' },
   'Bb Major': { stroke: '#db9cff', fill: '#3a2f56', label: '#e5b3ff' },
-  'B Major': { stroke: '#b0a7ff', fill: '#8385fd', label: '#c7c2ff' }
+  'B Major': { stroke: '#b0a7ff', fill: '#8385fd', label: '#c7c2ff' },
+  
+  // Minor tonalities (relative minors - same colors as their parallel majors)
+  'A minor': { stroke: '#56a2e8', fill: '#154163', label: '#74b9ff' }, // C Major parallel
+  'A# minor': { stroke: '#479d99', fill: '#0d3e37', label: '#6bccc7' }, // C# Major parallel
+  'Bb minor': { stroke: '#479d99', fill: '#0d3e37', label: '#6bccc7' }, // Db Major parallel
+  'B minor': { stroke: '#3a994c', fill: '#0d3712', label: '#51cf66' }, // D Major parallel
+  'C minor': { stroke: '#797d1a', fill: '#2b2f00', label: '#a3a821' }, // Eb Major parallel
+  'C# minor': { stroke: '#d69e2e', fill: '#5f3a00', label: '#fcc419' }, // E Major parallel
+  'Db minor': { stroke: '#d69e2e', fill: '#5f3a00', label: '#fcc419' }, // E Major parallel
+  'D minor': { stroke: '#f17634', fill: '#4d2b02', label: '#ff8c42' }, // F Major parallel
+  'D# minor': { stroke: '#ff7c5c', fill: '#a14922', label: '#ff9472' }, // F# Major parallel
+  'Eb minor': { stroke: '#ff7c5c', fill: '#a14922', label: '#ff9472' }, // Gb Major parallel
+  'E minor': { stroke: '#ff8383', fill: '#5b2c2c', label: '#ff9999' }, // G Major parallel
+  'F minor': { stroke: '#ff8ac9', fill: '#cc59a2', label: '#ffa8d4' }, // Ab Major parallel
+  'F# minor': { stroke: '#ff92ff', fill: '#e466f7', label: '#ffb3ff' }, // A Major parallel
+  'Gb minor': { stroke: '#ff92ff', fill: '#e466f7', label: '#ffb3ff' }, // A Major parallel
+  'G minor': { stroke: '#db9cff', fill: '#3a2f56', label: '#e5b3ff' }, // Bb Major parallel
+  'G# minor': { stroke: '#b0a7ff', fill: '#8385fd', label: '#c7c2ff' }  // B Major parallel
 }
 
 /**
@@ -66,7 +104,18 @@ export function getTonalityColor(
   if (!tonality) return theme === 'dark' ? '#666666' : '#999999'
   
   const palette = theme === 'dark' ? DARK_TONALITY_COLORS : LIGHT_TONALITY_COLORS
-  const colors = palette[tonality]
+  
+  // Try exact match first
+  let colors = palette[tonality]
+  
+  // If not found, try case-insensitive search
+  if (!colors) {
+    const lowerTonality = tonality.toLowerCase()
+    const matchedKey = Object.keys(palette).find(key => key.toLowerCase() === lowerTonality)
+    if (matchedKey) {
+      colors = palette[matchedKey]
+    }
+  }
   
   if (!colors) {
     // Fallback colors for unknown tonalities
@@ -81,7 +130,8 @@ export function getTonalityColor(
  */
 export function isMinorTonality(tonality: string | undefined | null): boolean {
   if (!tonality) return false
-  return tonality.toLowerCase().includes('minor') || tonality.toLowerCase().includes('m ')
+  const lowerTonality = tonality.toLowerCase()
+  return lowerTonality.includes('minor') || lowerTonality.includes(' m ') || lowerTonality.endsWith(' m')
 }
 
 /**
