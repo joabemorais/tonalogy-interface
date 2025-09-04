@@ -12,8 +12,10 @@ A comprehensive, modern design system for Tonalogy harmonic analysis interface, 
 - ✅ **Responsive Design**: Mobile-first approach with bottom navigation
 - ✅ **Theme Management**: System/manual theme switching with persistence
 - ✅ **Tonality Visualization**: Complete color palette for 12 major tonalities
+- ✅ **Tonality Integration**: Live color theming across analysis components
 - ✅ **Accessibility**: WCAG AA compliance with high contrast ratios
 - ✅ **Micro-interactions**: Smooth animations and state transitions
+- ✅ **Musical Context**: Dashed borders for minor tonalities visual distinction
 
 ### Design Philosophy
 - **Musical Authenticity**: Visual elements reflecting harmonic theory principles
@@ -139,6 +141,33 @@ Adapted color palette for dark theme visualizations with enhanced contrast:
 - **Color Harmony**: Colors are arranged chromatically around the circle of fifths
 - **Accessibility**: Each tonality maintains sufficient contrast ratios across themes
 - **Visualization**: Colors help users quickly identify tonal centers and modulations
+- **Minor Distinction**: Minor tonalities use dashed borders for visual differentiation
+- **Interactive States**: Hover and selection states enhance user feedback
+- **Badge System**: Consistent tonality badges across all interface components
+
+### Implementation Features
+
+#### Tonality Color System
+The Tonality Color System provides sophisticated color theming for harmonic analysis:
+
+**Core Components:**
+- `lib/tonality-colors.ts`: Complete color palette and utility functions
+- `hooks/use-tonality-theme.ts`: Theme-aware color hooks and styling utilities
+- `components/ui/tonality-badge.tsx`: Reusable tonality badge components
+
+**Key Functions:**
+- `getTonalityColor()`: Theme-aware color retrieval
+- `getTonalityStyles()`: Complete CSS style objects
+- `isMinorTonality()`: Minor tonality detection for dashed borders
+- `useTonalityTheme()`: React hook for color theming
+
+**Visual Features:**
+- **Smart Theming**: Automatic light/dark theme adaptation
+- **Minor Distinction**: Dashed borders for minor tonalities
+- **Interactive States**: Hover effects with color transitions  
+- **Badge Variants**: Multiple badge styles (default, outline, subtle)
+- **Size Options**: Small, medium, and large sizing
+- **Accessibility**: High contrast ratios maintained across all themes
 
 ## Typography
 
@@ -190,10 +219,22 @@ The component system is built on shadcn/ui foundations with custom Tonalogy enha
 
 #### Tonality Selection Interface
 - **Grid Layout**: 2-column mobile, 3-column desktop for optimal scanning
-- **Visual Feedback**: Immediate selection state with primary color highlighting
+- **Color-Coded Selection**: Each tonality uses its unique color identity
+- **Visual Feedback**: Immediate selection state with tonality-specific highlighting
+- **Dashed Borders**: Minor tonalities distinguished with dashed border styling
+- **Interactive States**: Smooth hover animations with color transitions
 - **Scrollable Container**: Maximum height with custom styled scrollbars
 - **Bulk Operations**: Clear all/select common patterns functionality
 - **Live Updates**: Real-time count and preview of selected tonalities
+- **Badge Integration**: Selected tonalities displayed as colored badges
+
+#### Tonality Badge System
+- **Multiple Variants**: Default, outline, and subtle styling options
+- **Size Scaling**: Small (12px), medium (16px), and large (20px) variants
+- **Color Integration**: Automatic theme-aware color application
+- **Minor Distinction**: Dashed borders for minor tonality identification
+- **Icon Support**: Optional music icons and indicator dots
+- **Responsive Design**: Adaptive sizing for different screen contexts
 
 #### Accordion Components
 - **Integrated Design**: Unified border containers with smooth expansion
@@ -204,8 +245,11 @@ The component system is built on shadcn/ui foundations with custom Tonalogy enha
 #### Analysis Results Display
 - **Progressive Disclosure**: Expandable sections for detailed analysis
 - **Color-Coded Results**: Tonality-specific colors for visual identification
+- **Enhanced Badges**: Sophisticated tonality badges with theme integration
+- **Step-by-Step Visualization**: Each analysis step shows relevant tonality colors
 - **Export Capabilities**: Downloadable visualizations in multiple formats
 - **Theme Switching**: Independent diagram theme control with system sync option
+- **Minor Detection**: Automatic dashed border styling for minor tonalities
 
 ### Layout Architecture
 
