@@ -260,40 +260,46 @@ export function HarmonicAnalyzer() {
           </div>
 
           {/* Tonality Selection - Accordion */}
-          <div className="space-y-3">
-            <button
-              onClick={() => setIsTonalitySectionOpen(!isTonalitySectionOpen)}
-              className="w-full flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <div className="flex items-center gap-3">
-                {isTonalitySectionOpen ? (
-                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                )}
-                <div className="text-left">
-                  <h3 className="text-sm font-medium">Tonalities to Test</h3>
-                  <p className="text-xs text-muted-foreground">Optional - Restrict analysis to specific keys</p>
-                </div>
-              </div>
-              {tonalities.length > 0 && (
-                <span className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded-full font-medium">
-                  {tonalities.length} selected
-                </span>
-              )}
-            </button>
-            
-            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-              isTonalitySectionOpen 
-                ? 'max-h-[600px] opacity-100' 
-                : 'max-h-0 opacity-0'
+          <div className="space-y-0">
+            <div className={`border rounded-lg overflow-hidden transition-all duration-300 ${
+              isTonalitySectionOpen ? 'bg-muted/20' : 'bg-muted/30'
             }`}>
-              <div className="p-3 border rounded-lg bg-background">
-                <TonalitySelector
-                  selected={tonalities}
-                  onChange={setTonalities}
-                  disabled={isLoading}
-                />
+              <button
+                onClick={() => setIsTonalitySectionOpen(!isTonalitySectionOpen)}
+                className={`w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring ${
+                  isTonalitySectionOpen ? 'border-b border-border/50' : ''
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {isTonalitySectionOpen ? (
+                    <ChevronUp className="h-4 w-4 text-muted-foreground transition-transform" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform" />
+                  )}
+                  <div className="text-left">
+                    <h3 className="text-sm font-medium">Tonalities to Test</h3>
+                    <p className="text-xs text-muted-foreground">Optional - Restrict analysis to specific keys</p>
+                  </div>
+                </div>
+                {tonalities.length > 0 && (
+                  <span className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded-full font-medium">
+                    {tonalities.length} selected
+                  </span>
+                )}
+              </button>
+              
+              <div className={`transition-all duration-300 ease-in-out ${
+                isTonalitySectionOpen 
+                  ? 'max-h-[600px] opacity-100' 
+                  : 'max-h-0 opacity-0'
+              }`}>
+                <div className="px-3 pb-3 pt-2 bg-background/50">
+                  <TonalitySelector
+                    selected={tonalities}
+                    onChange={setTonalities}
+                    disabled={isLoading}
+                  />
+                </div>
               </div>
             </div>
           </div>
