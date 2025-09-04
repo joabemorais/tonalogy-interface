@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useHistoryStore, useAnalysisStore } from '@/stores'
 import { formatTimestamp } from '@/lib/utils'
 import { ClientOnly } from '@/components/client-only'
+import { TonalityBadge } from '@/components/ui/tonality-badge'
 import type { AnalysisHistory } from '@/types'
 
 function RecentAnalysesContent() {
@@ -94,17 +95,20 @@ function RecentAnalysesContent() {
                 </Button>
               </div>
               
-              <div className="flex items-center gap-2 mb-1">
-                <div className={`text-xs px-2 py-1 rounded-full leading-none ${
-                  analysis.result.is_tonal_progression 
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                }`}>
-                  {analysis.result.is_tonal_progression 
-                    ? `✓ ${analysis.result.identified_tonality}`
-                    : '✗ Non-tonal'
-                  }
-                </div>
+              <div className="flex items-center gap-2 mb-2">
+                {analysis.result.is_tonal_progression ? (
+                  <TonalityBadge 
+                    tonality={analysis.result.identified_tonality}
+                    size="sm"
+                    variant="subtle"
+                    showDot={true}
+                    className="text-xs"
+                  />
+                ) : (
+                  <div className="text-xs px-2 py-1 rounded-full leading-none bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                    ✗ Non-tonal
+                  </div>
+                )}
               </div>
               
               <div className="text-xs text-muted-foreground mb-2">

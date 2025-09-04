@@ -275,4 +275,10 @@
   .custom-scrollbar-autohide::-webkit-scrollbar-corner {
     background: transparent;
   }
+  
+  /* Tonality selector button hover states */
+  .tonality-button.tonality-unselected:not(:disabled):hover {
+    background-color: var(--hover-bg) !important;
+    color: var(--label-color) !important;
+  }
 }

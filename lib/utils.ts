@@ -116,8 +116,8 @@ export function validateChords(chords: string[]): {
 export const COMMON_TONALITIES = [
   'C Major', 'G Major', 'D Major', 'A Major', 'E Major', 'B Major', 'F# Major',
   'Db Major', 'Ab Major', 'Eb Major', 'Bb Major', 'F Major',
-  'A Minor', 'E Minor', 'B Minor', 'F# Minor', 'C# Minor', 'G# Minor', 'D# Minor',
-  'Bb Minor', 'F Minor', 'C Minor', 'G Minor', 'D Minor'
+  'A minor', 'E minor', 'B minor', 'F# minor', 'C# minor', 'G# minor', 'D# minor',
+  'Bb minor', 'F minor', 'C minor', 'G minor', 'D minor', 'A# minor', 'Db minor', 'Eb minor'
 ]
 
 /**
