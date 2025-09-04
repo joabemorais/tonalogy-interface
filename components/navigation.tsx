@@ -62,7 +62,7 @@ export function Navigation() {
   return (
     <>
       {/* Top Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-background/98 backdrop-blur supports-[backdrop-filter]:bg-background/85">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
@@ -110,7 +110,7 @@ export function Navigation() {
 
             {/* Right Controls */}
             <div className="flex items-center gap-2">
-              {/* Sidebar Toggle - Desktop Only */}
+              {/* Sidebar Toggle */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -118,7 +118,7 @@ export function Navigation() {
                 disabled={isOnHistoryPage}
                 title={isOnHistoryPage ? "Already on history page" : "Toggle Recent Analyses"}
                 className={cn(
-                  "hidden md:flex transition-all duration-200",
+                  "transition-all duration-200",
                   isSidebarOpen ? "bg-accent" : "",
                   "disabled:opacity-50 disabled:cursor-not-allowed"
                 )}
@@ -159,7 +159,7 @@ export function Navigation() {
 
       {/* Bottom Navigation - Mobile Only */}
       {isMobile && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/98 backdrop-blur supports-[backdrop-filter]:bg-background/85 md:hidden">
           <div className="flex h-16 items-center justify-around px-2">
             {/* Analyze Tab */}
             <Link

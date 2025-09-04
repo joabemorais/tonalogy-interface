@@ -86,7 +86,7 @@ export function RightSidebar({ children }: RightSidebarProps) {
         )}
       >
         {/* Header da sidebar */}
-        <div className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur-sm">
+        <div className="flex items-center justify-between p-4 border-b bg-background/98 backdrop-blur-sm">
           <h2 className="text-lg font-semibold">Recent Analyses</h2>
         </div>
 
