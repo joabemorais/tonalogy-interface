@@ -266,7 +266,7 @@ export function HarmonicAnalyzer() {
             }`}>
               <button
                 onClick={() => setIsTonalitySectionOpen(!isTonalitySectionOpen)}
-                className={`w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring ${
+                className={`w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors focus:outline-none ${
                   isTonalitySectionOpen ? 'border-b border-border/50' : ''
                 }`}
               >
@@ -305,11 +305,11 @@ export function HarmonicAnalyzer() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+          <div className="flex flex-col gap-3 pt-4 border-t">
             <Button 
               onClick={handleAnalyze}
               disabled={isLoading || chords.length === 0}
-              className="flex-1 h-10"
+              className="w-full h-10"
               size="lg"
             >
               {isLoading ? (
@@ -320,29 +320,31 @@ export function HarmonicAnalyzer() {
               Analyze Progression
             </Button>
 
-            <div className="flex gap-2">
-              {hasAnyVisualization && (
-                <Button
-                  onClick={handleDownload}
-                  variant="outline"
-                  className="h-10 px-4"
-                  title="Download visualization"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </Button>
-              )}
+            {(hasAnyVisualization || true) && (
+              <div className="flex gap-2">
+                {hasAnyVisualization && (
+                  <Button
+                    onClick={handleDownload}
+                    variant="outline"
+                    className="flex-1 h-10"
+                    title="Download visualization"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                )}
 
-              <Button
-                onClick={handleReset}
-                variant="ghost"
-                className="h-10 px-4"
-                title="Reset to default"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Reset
-              </Button>
-            </div>
+                <Button
+                  onClick={handleReset}
+                  variant="ghost"
+                  className={`h-10 ${hasAnyVisualization ? 'flex-1' : 'w-full'}`}
+                  title="Reset to default"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
