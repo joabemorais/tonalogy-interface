@@ -1,9 +1,37 @@
-# Tonalogy Design System
+# Tonalogy Design System v2.0
 
 ## Overview
-A modern, sophisticated design system inspired by Linear and Raycast, emphasizing deep contrast, subtle shadows, and clean typography for the Tonalogy harmonic analysis interface.
+A comprehensive, modern design system for Tonalogy harmonic analysis interface, inspired by Linear and Raycast aesthetics. This system emphasizes deep contrast, sophisticated color harmonies, musical theory integration, and exceptional accessibility across all platforms and devices.
 
-## Color Palette
+## Project Scope & Evolution
+
+### Current Implementation Status
+- ✅ **Core Color System**: Fully implemented HSL-based theme switching
+- ✅ **Component Architecture**: Modular shadcn/ui components with Tailwind CSS
+- ✅ **Typography System**: Inter font with optimized font features
+- ✅ **Responsive Design**: Mobile-first approach with bottom navigation
+- ✅ **Theme Management**: System/manual theme switching with persistence
+- ✅ **Tonality Visualization**: Complete color palette for 12 major tonalities
+- ✅ **Accessibility**: WCAG AA compliance with high contrast ratios
+- ✅ **Micro-interactions**: Smooth animations and state transitions
+
+### Design Philosophy
+- **Musical Authenticity**: Visual elements reflecting harmonic theory principles
+- **Academic Credibility**: Professional appearance suitable for research contexts
+- **Technical Sophistication**: Modern design reflecting computational intelligence
+- **Universal Accessibility**: Inclusive design for all users and devices
+- **Performance-First**: Optimized rendering and lightweight implementations
+
+## Color System Architecture
+
+### Implementation Strategy
+All colors are implemented using HSL (Hue, Saturation, Lightness) values in CSS custom properties, enabling:
+- **Seamless Theme Switching**: Instant transitions between light/dark modes
+- **Dynamic Color Manipulation**: Runtime adjustments for accessibility
+- **Consistent Color Management**: Single source of truth across the application
+- **Brand Flexibility**: Easy customization while maintaining design coherence
+
+### Color Palette
 
 ### Dark Theme (Primary)
 Our dark theme uses deep blacks and grays with vibrant accent colors for a premium, professional feel.
@@ -125,6 +153,21 @@ Adapted color palette for dark theme visualizations with enhanced contrast:
 
 ## Component Design Patterns
 
+### Design System Integration
+The component system is built on shadcn/ui foundations with custom Tonalogy enhancements:
+- **Consistent Spacing**: 4px base unit system (Tailwind spacing scale)
+- **Unified Interactions**: Standardized hover, focus, and active states
+- **Theme-Aware Components**: All components respond to system/manual theme changes
+- **Musical Context**: Specialized components for harmonic analysis workflows
+
+### Interface Hierarchy
+
+#### Navigation Systems
+- **Desktop Navigation**: Collapsible sidebar with contextual sections
+- **Mobile Navigation**: Bottom tab bar following iOS/Android patterns
+- **Breadcrumbs**: Clear navigation paths for complex analysis workflows
+- **Theme Integration**: Navigation elements adapt to current theme with smooth transitions
+
 ### Musical Interface Elements
 
 #### Chord Buttons
@@ -145,30 +188,53 @@ Adapted color palette for dark theme visualizations with enhanced contrast:
 - **Padding**: 24px (p-6) for generous spacing
 - **Animation**: Slide-in from top with 200ms duration
 
-#### Selection Grids
-- **Spacing**: 12px gaps (gap-3) for touch-friendly interaction
-- **Button Height**: 40px (h-10) for builder elements
-- **Selection State**: Primary color with scale animation
-- **Hover State**: Accent background with border highlight
+#### Tonality Selection Interface
+- **Grid Layout**: 2-column mobile, 3-column desktop for optimal scanning
+- **Visual Feedback**: Immediate selection state with primary color highlighting
+- **Scrollable Container**: Maximum height with custom styled scrollbars
+- **Bulk Operations**: Clear all/select common patterns functionality
+- **Live Updates**: Real-time count and preview of selected tonalities
 
-### Layout Principles
+#### Accordion Components
+- **Integrated Design**: Unified border containers with smooth expansion
+- **Visual States**: Clear open/closed indicators with chevron animations
+- **Content Hierarchy**: Proper spacing and typography within expanded sections
+- **Theme Consistency**: Background transitions that respect current theme
+
+#### Analysis Results Display
+- **Progressive Disclosure**: Expandable sections for detailed analysis
+- **Color-Coded Results**: Tonality-specific colors for visual identification
+- **Export Capabilities**: Downloadable visualizations in multiple formats
+- **Theme Switching**: Independent diagram theme control with system sync option
+
+### Layout Architecture
+
+#### Responsive Breakpoints
+- **Mobile First**: Base styles optimized for 320px+ viewports
+- **Tablet**: 768px+ with enhanced interaction patterns
+- **Desktop**: 1024px+ with sidebar navigation and advanced features
+- **Large Desktop**: 1400px+ with optimized content width
+
+#### Grid Systems
+- **Content Grids**: CSS Grid for complex layouts with proper fallbacks
+- **Component Grids**: Flexbox for component-level arrangements
+- **Musical Grids**: Specialized grids for chord progressions and tonality matrices
 
 #### Spacing System
-- **Base Unit**: 4px
-- **Component Padding**: 16px-24px
-- **Section Gaps**: 24px
-- **Element Gaps**: 12px
+- **Base Unit**: 4px (0.25rem) for micro-spacing
+- **Component Spacing**: 16px-24px (1rem-1.5rem) for component padding
+- **Section Spacing**: 32px (2rem) for major section separation
+- **Page Spacing**: 64px (4rem) for page-level content separation
 
-#### Elevation System
-- **Level 0**: Base background (no shadow)
-- **Level 1**: Card surfaces (shadow-sm)
-- **Level 2**: Interactive elements (shadow-md)
-- **Level 3**: Floating panels (shadow-lg)
-- **Level 4**: Modal overlays (shadow-xl)
+## Advanced Interaction Patterns
 
-## Animation & Interactions
+### State Management & Feedback
+- **Loading States**: Skeleton screens and progressive loading indicators
+- **Error Handling**: Contextual error messages with recovery actions
+- **Success Feedback**: Subtle confirmations without disrupting workflow
+- **Progress Indicators**: Clear progress communication for analysis operations
 
-### Micro-Interactions
+### Micro-Interactions & Animations
 - **Button Press**: Scale down to 95% with 200ms duration
 - **Button Hover**: Scale up to 105% with smooth transition
 - **Panel Open**: Slide-in animation with fade
