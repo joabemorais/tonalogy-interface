@@ -7,7 +7,7 @@ import { Music, Play, Download, RefreshCw, Eye, ChevronDown, ChevronUp, Clock } 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { VisualChordInput } from '@/components/visual-chord-input'
-import { TonalitySelector } from '@/components/tonality-selector'
+import { TonalitySelector, TonalityRainbow } from '@/components/tonality-selector'
 import { AnalysisResults } from '@/components/analysis-results'
 import { VisualizationMode } from '@/components/visualization-mode'
 import { MultiThemeVisualizationDisplay } from '@/components/multi-theme-visualization-display'
@@ -261,7 +261,7 @@ export function HarmonicAnalyzer() {
 
           {/* Tonality Selection - Accordion */}
           <div className="space-y-0">
-            <div className={`border rounded-lg overflow-hidden transition-all duration-300 ${
+            <div className={`border rounded-lg overflow-hidden transition-all duration-300 relative ${
               isTonalitySectionOpen ? 'bg-muted/20' : 'bg-muted/30'
             }`}>
               <button
@@ -287,7 +287,6 @@ export function HarmonicAnalyzer() {
                   </span>
                 )}
               </button>
-              
               <div className={`transition-all duration-300 ease-in-out ${
                 isTonalitySectionOpen 
                   ? 'max-h-[600px] opacity-100' 
@@ -300,6 +299,10 @@ export function HarmonicAnalyzer() {
                     disabled={isLoading}
                   />
                 </div>
+              </div>
+              {/* Rainbow as border-bottom */}
+              <div className="absolute left-0 right-0 bottom-0 w-full pointer-events-none">
+                <TonalityRainbow />
               </div>
             </div>
           </div>

@@ -11,6 +11,35 @@ interface TonalitySelectorProps {
   disabled?: boolean
 }
 
+// Component for the tonality rainbow at the bottom
+function TonalityRainbow() {
+  const { getColor } = useTonalityTheme()
+  
+  // Get the 12 major tonalities in chromatic order
+  const majorTonalities = [
+    'C Major', 'C# Major', 'D Major', 'D# Major', 'E Major', 'F Major',
+    'F# Major', 'G Major', 'G# Major', 'A Major', 'A# Major', 'B Major'
+  ]
+
+  return (
+    <div className="relative mt-3">
+      <div className="flex h-1 rounded-full overflow-hidden">
+        {majorTonalities.map((tonality, index) => {
+          const strokeColor = getColor(tonality, 'stroke')
+          return (
+            <div
+              key={tonality}
+              className="flex-1 transition-all duration-200 hover:h-1.5"
+              style={{ backgroundColor: strokeColor }}
+              title={tonality}
+            />
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export function TonalitySelector({ selected, onChange, disabled = false }: TonalitySelectorProps) {
   const { getColor, getStyles, isMinor } = useTonalityTheme()
 
@@ -92,27 +121,32 @@ export function TonalitySelector({ selected, onChange, disabled = false }: Tonal
         </div>
       </div>
       {selected.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
+        <div className="flex items-center gap-2 mt-3">
           <span className="text-xs text-muted-foreground">Selected:</span>
-          {selected.map((tonality) => (
-            <span
-              key={tonality}
-              className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full"
-              style={{
-                backgroundColor: `${getColor(tonality, 'fill')}25`,
-                color: getColor(tonality, 'label'),
-                border: `1px ${isMinor(tonality) ? 'dashed' : 'solid'} ${getColor(tonality, 'stroke')}50`
-              }}
-            >
-              <div 
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ backgroundColor: getColor(tonality, 'stroke') }}
-              />
-              {tonality}
-            </span>
-          ))}
+          <div className="flex flex-wrap gap-1.5 items-center">
+            {selected.map((tonality) => (
+              <span
+                key={tonality}
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full"
+                style={{
+                  backgroundColor: `${getColor(tonality, 'fill')}25`,
+                  color: getColor(tonality, 'label'),
+                  border: `1px ${isMinor(tonality) ? 'dashed' : 'solid'} ${getColor(tonality, 'stroke')}50`
+                }}
+              >
+                <div 
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ backgroundColor: getColor(tonality, 'stroke') }}
+                />
+                {tonality}
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </div>
   )
 }
+
+// Export TonalityRainbow separately for use in other components
+export { TonalityRainbow }
