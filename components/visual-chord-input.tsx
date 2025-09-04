@@ -5,6 +5,7 @@ import { Plus, X, Music2, Hash, Palette } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useChordTonalityStyling } from '@/hooks/use-chord-tonality-styling'
+import { useNoteTonalityStyling } from '@/hooks/use-note-tonality-styling'
 import { MobileChordKeyboard } from '@/components/mobile-chord-keyboard'
 
 interface VisualChordInputProps {
@@ -115,6 +116,24 @@ function ChordButton({ chord, index, isEditing, onClick, onRemove, disabled }: {
         <X className="h-4 w-4" />
       </button>
     </div>
+  )
+}
+
+function DesktopNoteButton({ note, isSelected, onClick }: { note: Note, isSelected: boolean, onClick: () => void }) {
+  const noteTonalityStyle = useNoteTonalityStyling(note)
+  return (
+    <button
+      onClick={onClick}
+      style={noteTonalityStyle as React.CSSProperties}
+      className={cn(
+        "h-12 text-lg font-semibold rounded-lg border-2 transition-all duration-200 flex items-center justify-center shadow-sm",
+        isSelected
+          ? "[background-color:var(--note-tonality-fill)] [border-color:var(--note-tonality-stroke)] [color:var(--note-tonality-label)] shadow-md scale-105"
+          : "bg-background border-border hover:[background-color:var(--note-tonality-fill)] hover:[border-color:var(--note-tonality-stroke)] hover:[color:var(--note-tonality-label)] hover:shadow-md"
+      )}
+    >
+      {note}
+    </button>
   )
 }
 
@@ -278,19 +297,12 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                       <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
                       <div className="grid grid-cols-2 gap-2">
                         {NOTES.map((note) => (
-                          <button
+                          <DesktopNoteButton
                             key={note}
+                            note={note}
+                            isSelected={builder.note === note}
                             onClick={() => handleBuilderChange({ note })}
-                            className={cn(
-                              "h-12 text-lg font-semibold rounded-lg border-2 transition-all duration-200",
-                              "flex items-center justify-center shadow-sm",
-                              builder.note === note
-                                ? "border-primary shadow-md scale-105"
-                                : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
-                            )}
-                          >
-                            {note}
-                          </button>
+                          />
                         ))}
                       </div>
                     </div>
@@ -420,19 +432,12 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                       <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
                       <div className="grid grid-cols-2 gap-2">
                         {NOTES.map((note) => (
-                          <button
+                          <DesktopNoteButton
                             key={note}
+                            note={note}
+                            isSelected={builder.note === note}
                             onClick={() => handleBuilderChange({ note })}
-                            className={cn(
-                              "h-12 text-lg font-semibold rounded-lg border-2 transition-all duration-200",
-                              "flex items-center justify-center shadow-sm",
-                              builder.note === note
-                                ? "border-primary shadow-md scale-105"
-                                : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
-                            )}
-                          >
-                            {note}
-                          </button>
+                          />
                         ))}
                       </div>
                     </div>
