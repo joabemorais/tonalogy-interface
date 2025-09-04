@@ -81,16 +81,15 @@ function ChordButton({ chord, index, isEditing, onClick, onRemove, disabled }: {
         className={cn(
           "w-20 h-14 px-3 py-2 text-base font-semibold border-2 rounded-xl bg-background",
           "transition-all duration-200",
-          "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           "flex items-center justify-center shadow-sm",
           "border-border",
           "active:scale-95",
-          // Hover styles using CSS custom properties
+          // Hover styles usando CSS custom properties
           "hover:shadow-md hover:[border-color:var(--chord-tonality-stroke)] hover:[border-style:var(--chord-tonality-border-style)]",
           // Active/pressed styles
           "active:[background-color:var(--chord-tonality-fill)] active:[border-color:var(--chord-tonality-stroke)] active:[border-style:var(--chord-tonality-border-style)] active:[color:var(--chord-tonality-label)]",
-          // Selected/editing state using CSS custom properties
+          // Estado selecionado/editando usando CSS custom properties
           isEditing && "shadow-md [background-color:var(--chord-tonality-fill)] [border-color:var(--chord-tonality-stroke)] [border-style:var(--chord-tonality-border-style)] [color:var(--chord-tonality-label)]"
         )}
       >
