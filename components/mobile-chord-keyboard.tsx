@@ -354,12 +354,28 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
                 <X className="h-5 w-5" />
               </button>
               
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col items-center gap-3 relative">
                 <span className="text-xs text-muted-foreground font-medium">
                   {editingIndex !== null ? 'Edit Chord' : 'Add Chord'}
                 </span>
-                <div className="text-2xl font-bold px-4 py-2 bg-accent rounded-xl text-center min-w-[80px] shadow-sm">
-                  {buildChordSymbol(builder)}
+                <div className="relative">
+                  <div className="text-2xl font-bold px-4 py-2 bg-accent rounded-xl text-center min-w-[80px] shadow-sm">
+                    {buildChordSymbol(builder)}
+                  </div>
+                  
+                  {/* Remove button - only show when editing existing chord and there's more than one chord */}
+                  {editingIndex !== null && chords.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleRemoveChord(editingIndex)
+                        handleCloseKeyboard()
+                      }}
+                      className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80 flex items-center justify-center shadow-lg transition-all duration-200 border-[3px] border-red-800 hover:border-red-900 z-10"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
               </div>
               
