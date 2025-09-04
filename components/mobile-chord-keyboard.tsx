@@ -81,6 +81,7 @@ interface ChordButtonProps {
   onChordPress: (index: number) => void
   onLongPress: (index: number) => void
   onRemove: (index: number) => void
+  isEditing?: boolean
 }
 
 function ChordButton({ 
@@ -90,7 +91,8 @@ function ChordButton({
   showRemoveButtons, 
   onChordPress, 
   onLongPress, 
-  onRemove 
+  onRemove,
+  isEditing = false
 }: ChordButtonProps) {
   const longPressProps = useLongPress(
     () => onLongPress(index),
@@ -110,7 +112,8 @@ function ChordButton({
           "disabled:opacity-50 disabled:cursor-not-allowed",
           "flex items-center justify-center shadow-sm hover:shadow-md",
           "active:scale-95", // Visual feedback for press
-          showRemoveButtons && "border-destructive/50 bg-destructive/5"
+          showRemoveButtons && "border-destructive/50 bg-destructive/5",
+          isEditing && "border-primary shadow-md bg-primary/5" // Uniform editing state with desktop
         )}
       >
         <span className="select-none">{chord}</span>
@@ -295,6 +298,7 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
               onChordPress={handleChordPress}
               onLongPress={handleLongPress}
               onRemove={handleRemoveChord}
+              isEditing={isOpen && editingIndex === index}
             />
           ))}
           

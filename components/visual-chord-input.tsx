@@ -185,7 +185,8 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 "flex items-center justify-center shadow-sm hover:shadow-md",
                 "border-border hover:border-primary/50",
-                isOpen && editingIndex === index && "border-primary shadow-md"
+                "active:scale-95", // Uniform press feedback like mobile
+                isOpen && editingIndex === index && "border-primary shadow-md bg-primary/5"
               )}
             >
               <span className="select-none">{chord}</span>
@@ -336,6 +337,7 @@ export function VisualChordInput({ chords, onChange, disabled = false, maxChords
                 "focus:outline-none focus:ring-2 focus:ring-ring",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 "flex items-center justify-center group shadow-sm",
+                "active:scale-95", // Uniform press feedback like mobile
                 (isOpen && editingIndex === null)
                   ? "border-primary bg-primary/10 shadow-md"
                   : "hover:border-primary hover:bg-primary/10 hover:shadow-md"
