@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Music, Settings, History, Moon, Sun, PanelRight, PanelRightClose, BarChart3 } from 'lucide-react'
+import { Music, Settings, History, Moon, Sun, PanelRight, PanelRightClose, Waypoints } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -182,7 +182,7 @@ export function Navigation() {
               {pathname === "/" && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
               )}
-              <BarChart3 className="h-5 w-5" />
+              <Waypoints className="h-5 w-5" />
               <span className="text-xs font-medium">Analyze</span>
             </Link>
 
