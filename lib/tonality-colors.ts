@@ -29,10 +29,10 @@ export const LIGHT_TONALITY_COLORS: TonalityColorPalette = {
   'G Major': { stroke: '#ff8787', fill: '#ffc9c9', label: '#e03131' },
   'G# Major': { stroke: '#FB859A', fill: '#FEC6D0', label: '#D12B47' },
   'Ab Major': { stroke: '#FB859A', fill: '#FEC6D0', label: '#D12B47' },
-  'A Major': { stroke: '#f783ac', fill: '#fcc2d7', label: '#c2255c' },
+  'A Major': { stroke: '#f783ac', fill: '#fce4ec', label: '#c2255c' },
   'A# Major': { stroke: '#E97DCF', fill: '#F5C0E9', label: '#AF2E89' },
   'Bb Major': { stroke: '#E97DCF', fill: '#F5C0E9', label: '#AF2E89' },
-  'B Major': { stroke: '#da77f2', fill: '#eebefa', label: '#9c36b5' },
+  'B Major': { stroke: '#da77f2', fill: '#f3e5f5', label: '#9c36b5' },
   
   // Minor tonalities (relative minors - same colors as their parallel majors)
   'A minor': { stroke: '#4dabf7', fill: '#a5d8ff', label: '#1971c2' }, // C Major parallel
@@ -47,10 +47,10 @@ export const LIGHT_TONALITY_COLORS: TonalityColorPalette = {
   'Eb minor': { stroke: '#FF986A', fill: '#FFD1B9', label: '#E4451F' }, // Gb Major parallel
   'E minor': { stroke: '#ff8787', fill: '#ffc9c9', label: '#e03131' }, // G Major parallel
   'F minor': { stroke: '#FB859A', fill: '#FEC6D0', label: '#D12B47' }, // Ab Major parallel
-  'F# minor': { stroke: '#f783ac', fill: '#fcc2d7', label: '#c2255c' }, // A Major parallel
-  'Gb minor': { stroke: '#f783ac', fill: '#fcc2d7', label: '#c2255c' }, // A Major parallel
+  'F# minor': { stroke: '#f783ac', fill: '#fce4ec', label: '#c2255c' }, // A Major parallel
+  'Gb minor': { stroke: '#f783ac', fill: '#fce4ec', label: '#c2255c' }, // A Major parallel
   'G minor': { stroke: '#E97DCF', fill: '#F5C0E9', label: '#AF2E89' }, // Bb Major parallel
-  'G# minor': { stroke: '#da77f2', fill: '#eebefa', label: '#9c36b5' }  // B Major parallel
+  'G# minor': { stroke: '#da77f2', fill: '#f3e5f5', label: '#9c36b5' }  // B Major parallel
 }
 
 // Dark Theme Tonality Colors  
@@ -69,10 +69,10 @@ export const DARK_TONALITY_COLORS: TonalityColorPalette = {
   'G Major': { stroke: '#ff8383', fill: '#5b2c2c', label: '#ff9999' },
   'G# Major': { stroke: '#ff8ac9', fill: '#cc59a2', label: '#ffa8d4' },
   'Ab Major': { stroke: '#ff8ac9', fill: '#cc59a2', label: '#ffa8d4' },
-  'A Major': { stroke: '#ff92ff', fill: '#e466f7', label: '#ffb3ff' },
+  'A Major': { stroke: '#ff92ff', fill: '#4a2448', label: '#ffb3ff' },
   'A# Major': { stroke: '#db9cff', fill: '#3a2f56', label: '#e5b3ff' },
   'Bb Major': { stroke: '#db9cff', fill: '#3a2f56', label: '#e5b3ff' },
-  'B Major': { stroke: '#b0a7ff', fill: '#8385fd', label: '#c7c2ff' },
+  'B Major': { stroke: '#b0a7ff', fill: '#2e2d4a', label: '#c7c2ff' },
   
   // Minor tonalities (relative minors - same colors as their parallel majors)
   'A minor': { stroke: '#56a2e8', fill: '#154163', label: '#74b9ff' }, // C Major parallel
@@ -87,10 +87,10 @@ export const DARK_TONALITY_COLORS: TonalityColorPalette = {
   'Eb minor': { stroke: '#ff7c5c', fill: '#a14922', label: '#ff9472' }, // Gb Major parallel
   'E minor': { stroke: '#ff8383', fill: '#5b2c2c', label: '#ff9999' }, // G Major parallel
   'F minor': { stroke: '#ff8ac9', fill: '#cc59a2', label: '#ffa8d4' }, // Ab Major parallel
-  'F# minor': { stroke: '#ff92ff', fill: '#e466f7', label: '#ffb3ff' }, // A Major parallel
-  'Gb minor': { stroke: '#ff92ff', fill: '#e466f7', label: '#ffb3ff' }, // A Major parallel
+  'F# minor': { stroke: '#ff92ff', fill: '#4a2448', label: '#ffb3ff' }, // A Major parallel
+  'Gb minor': { stroke: '#ff92ff', fill: '#4a2448', label: '#ffb3ff' }, // A Major parallel
   'G minor': { stroke: '#db9cff', fill: '#3a2f56', label: '#e5b3ff' }, // Bb Major parallel
-  'G# minor': { stroke: '#b0a7ff', fill: '#8385fd', label: '#c7c2ff' }  // B Major parallel
+  'G# minor': { stroke: '#b0a7ff', fill: '#2e2d4a', label: '#c7c2ff' }  // B Major parallel
 }
 
 /**
@@ -254,4 +254,26 @@ export function getChordTonality(chordSymbol: string): string | null {
   const tonalityName = isMinor ? `${tonalityRoot} minor` : `${tonalityRoot} Major`
   
   return tonalityName
+}
+
+/**
+ * Get the major tonality for a single note (for chord builder buttons)
+ */
+export function getNoteTonality(note: string, accidental?: string): string | null {
+  if (!note || !['A', 'B', 'C', 'D', 'E', 'F', 'G'].includes(note.toUpperCase())) {
+    return null
+  }
+  
+  const normalizedNote = note.toUpperCase()
+  let tonalityAccidental = ''
+  
+  if (accidental) {
+    if (accidental === '#' || accidental === '♯') {
+      tonalityAccidental = '#'
+    } else if (accidental === 'b' || accidental === '♭') {
+      tonalityAccidental = 'b'
+    }
+  }
+  
+  return `${normalizedNote}${tonalityAccidental} Major`
 }

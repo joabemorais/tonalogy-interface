@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { X, Plus, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useChordTonalityStyling } from '@/hooks/use-chord-tonality-styling'
+import { useNoteTonalityStyling } from '@/hooks/use-note-tonality-styling'
 
 // Hook for long press detection - only handles long press, doesn't interfere with onClick
 function useLongPress(onLongPress: () => void, onClick: () => void, delay = 500) {
@@ -149,6 +150,32 @@ function ChordButton({
 function buildChordSymbol(builder: ChordBuilder): string {
   const accidentalSymbol = builder.accidental === '♮' ? '' : builder.accidental
   return `${builder.note}${accidentalSymbol}${builder.type.symbol}`
+}
+
+// Simple note button component with tonality styling for mobile
+function MobileNoteButton({ note, isSelected, onClick }: {
+  note: Note
+  isSelected: boolean
+  onClick: () => void
+}) {
+  const noteTonalityStyle = useNoteTonalityStyling(note)
+  
+  return (
+    <button
+      onClick={onClick}
+      style={noteTonalityStyle}
+      className={cn(
+        "h-12 w-full text-lg font-semibold rounded-lg border-2 transition-all duration-200",
+        "flex items-center justify-center shadow-sm",
+        // Base styling - match other buttons
+        isSelected
+          ? "[background-color:var(--note-tonality-fill)] [border-color:var(--note-tonality-stroke)] [color:var(--note-tonality-label)] shadow-md scale-105"
+          : "bg-background border-border hover:shadow-md"
+      )}
+    >
+      {note}
+    </button>
+  )
 }
 
 function parseChordSymbol(chord: string): ChordBuilder | null {
@@ -404,19 +431,12 @@ export function MobileChordKeyboard({ chords, onChange, disabled = false, maxCho
                 <label className="text-sm font-semibold text-muted-foreground text-center block">Note</label>
                 <div className="grid grid-cols-7 gap-2">
                   {NOTES.map((note) => (
-                    <button
+                    <MobileNoteButton
                       key={note}
+                      note={note}
+                      isSelected={builder.note === note}
                       onClick={() => handleBuilderChange({ note })}
-                      className={cn(
-                        "h-12 w-full text-lg font-semibold rounded-lg border-2 transition-all duration-200",
-                        "flex items-center justify-center shadow-sm",
-                        builder.note === note
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-105"
-                          : "bg-background hover:bg-accent hover:text-accent-foreground border-border hover:border-primary/50 hover:shadow-md"
-                      )}
-                    >
-                      {note}
-                    </button>
+                    />
                   ))}
                 </div>
               </div>
