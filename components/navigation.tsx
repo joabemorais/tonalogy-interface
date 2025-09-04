@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Music, Settings, History, Moon, Sun, PanelRight, PanelRightClose } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,8 @@ import { Button } from '@/components/ui/button'
 export function Navigation() {
   const { theme, setTheme } = useTheme()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const pathname = usePathname()
+  const isOnHistoryPage = pathname === '/history'
 
   useEffect(() => {
     // Função para sincronizar estado da sidebar
@@ -92,8 +95,11 @@ export function Navigation() {
               variant="ghost"
               size="icon"
               onClick={handleToggle}
-              title="Toggle Recent Analyses"
-              className={`transition-all duration-200 ${isSidebarOpen ? "bg-accent" : ""}`}
+              disabled={isOnHistoryPage}
+              title={isOnHistoryPage ? "Already on history page" : "Toggle Recent Analyses"}
+              className={`transition-all duration-200 ${
+                isSidebarOpen ? "bg-accent" : ""
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               <div className="relative w-5 h-5">
                 <PanelRight 

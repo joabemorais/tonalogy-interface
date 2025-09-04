@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { usePathname } from 'next/navigation'
 import { Music, Play, Download, RefreshCw, Eye, ChevronDown, ChevronUp, Clock } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -18,6 +19,8 @@ import { ProgressionAnalysisRequest, ProgressionAnalysisResponse } from '@/types
 
 export function HarmonicAnalyzer() {
   const [tonalities, setTonalities] = useState<string[]>([])
+  const pathname = usePathname()
+  const isOnHistoryPage = pathname === '/history'
   const [isGeneratingVisualization, setIsGeneratingVisualization] = useState(false)
   const [isTonalitySectionOpen, setIsTonalitySectionOpen] = useState(false)
   
@@ -213,8 +216,9 @@ export function HarmonicAnalyzer() {
                   const event = new CustomEvent('toggleSidebar')
                   window.dispatchEvent(event)
                 }}
-                className="text-xs gap-1.5 h-7 px-2 text-muted-foreground hover:text-foreground transition-colors"
-                title="View analysis history"
+                disabled={isOnHistoryPage}
+                className="text-xs gap-1.5 h-7 px-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={isOnHistoryPage ? "Already on history page" : "View analysis history"}
               >
                 <Clock className="h-3.5 w-3.5" />
                 History
