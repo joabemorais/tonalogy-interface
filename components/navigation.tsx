@@ -14,6 +14,8 @@ export function Navigation() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const pathname = usePathname()
   const isOnHistoryPage = pathname === '/history'
+  const isOnSettingsPage = pathname === '/settings'
+  const shouldDisableSidebar = isOnHistoryPage || isOnSettingsPage
   const isMobile = useIsMobile()
 
   useEffect(() => {
@@ -115,8 +117,14 @@ export function Navigation() {
                 variant="ghost"
                 size="icon"
                 onClick={handleToggle}
-                disabled={isOnHistoryPage}
-                title={isOnHistoryPage ? "Already on history page" : "Toggle Recent Analyses"}
+                disabled={shouldDisableSidebar}
+                title={
+                  isOnHistoryPage 
+                    ? "Already on history page" 
+                    : isOnSettingsPage 
+                    ? "Already on settings page"
+                    : "Toggle Recent Analyses"
+                }
                 className={cn(
                   "transition-all duration-200",
                   isSidebarOpen ? "bg-accent" : "",
